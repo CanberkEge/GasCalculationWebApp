@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Calculation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Gas Calculation</h1>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Fuel Calculator</h2>
+            <p>Calculate fuel consumption and costs effortlessly.</p>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <h3>Calculate Your Fuel Costs</h3>
+        <form method="post" action="/Home/Calculate" class="form">
+            <div class="form-group">
+                <label for="fuelType">Fuel Type:</label>
+                <select id="fuelType" name="fuelType">
+                    <option value="benzin">Benzin</option>
+                    <option value="dizel">Dizel</option>
+                    <option value="lpg">LPG</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="distance">Distance (km):</label>
+                <input type="text" id="distance" name="distance" required />
+            </div>
+            <div class="form-group">
+                <label for="averageGasSpend">Average Gas Spend (liters per 100 km):</label>
+                <input type="text" id="averageGasSpend" name="averageGasSpend" required />
+            </div>
+            <button type="submit" class="btn">Calculate</button>
+        </form>
+    </section>
+
+    <section class="result-section">
+        <h3>Results</h3>
+        <div id="result">
+            @if (ViewBag.Result != null)
+            {
+                <p>@Html.Raw(ViewBag.Result)</p>
+            }
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Gas Calculation. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
