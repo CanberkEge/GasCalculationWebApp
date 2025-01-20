@@ -1,14 +1,37 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using GasCalculationWebApp.Data;
+
+
 
 namespace GasCalculationWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
+            // Marka listesini dropdown için gönder
+           // List<string> brands = _context.CarDatas
+           var brands = _context.CarDatas
+                .Select(c => c.Brand)
+                .Distinct()
+                .ToList();
+
+            // ViewBag.Brands = brands;
+            ViewBag.Brands = brands.Any() ? brands : new List<string> { "No brands available" };   
+
             return View();
         }
 
@@ -37,32 +60,173 @@ namespace GasCalculationWebApp.Controllers
                 return View("Index");
             }
 
-            // Fiyat verisini doğru şekilde parse etmek için TryParse kullanıyoruz
-            double price;
-            if (!double.TryParse(priceText.Replace(".", ","), out price))
+            if (!double.TryParse(priceText.Replace(".", ","), out double price))
             {
                 ViewBag.Result = $"Unable to parse price for {fuelType}.";
                 return View("Index");
             }
 
-            // Yakıt tüketimi hesaplama
             double totalGasSpend = Math.Round((averageGasSpend * distance) / 100, 2);
-
-            // Toplam fiyat hesaplama
             double totalPrice = Math.Round(totalGasSpend * price, 2);
-
-            // Gidiş-dönüş maliyeti
             double roundTripPrice = Math.Round(totalPrice * 2, 2);
 
-            // Sonuçları ViewBag'e ekleyelim
             ViewBag.Result = $"Fuel Type: {fuelTypeLabel}<br>" +
                              $"Price per liter: {price} TL<br>" +
                              $"Total fuel consumption = {totalGasSpend} liters<br>" +
                              $"Total price = {totalPrice} TL<br>" +
                              $"Round trip price = {roundTripPrice} TL";
 
+            ViewBag.Brands = _context.CarDatas
+                .Select(c => c.Brand)
+                .Distinct()
+                .ToList();
+
             return View("Index");
         }
+
+        [HttpPost]
+        public IActionResult CalculateByCar(string brand, string model, string generation, string year, string engine, string fuel, double distance)
+        {
+            var selectedCar = _context.CarDatas
+                .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
+
+            if (selectedCar != null)
+            {
+
+
+                //eski hali: double fuelConsumption = selectedCar.CityConsumption;
+                double fuelConsumption = selectedCar.CityConsumption;
+
+
+
+
+                // double fuelConsumption = selectedCar.CityConsumption.HasValue
+                //   ? selectedCar.CityConsumption.Value
+                // : 0.0; // Varsayılan değer olarak float türünde 0.0 kullanıyoruz
+
+
+
+                string priceText = GetFuelPrice(selectedCar.Fuel);
+                if (!double.TryParse(priceText.Replace(".", ","), out double fuelPrice))
+                {
+                    ViewBag.CarResult = "Unable to fetch fuel price.";
+                    return View("Index");
+                }
+
+                double totalFuel = Math.Round((distance / 100) * fuelConsumption, 2);
+                double cost = Math.Round(totalFuel * fuelPrice, 2);
+
+                ViewBag.CarResult = $"Car: {brand} {model} ({generation})<br>" +
+                                    $"Fuel Consumption: {fuelConsumption} L/100km<br>" +
+                                    $"Fuel Price: {fuelPrice} TL/L<br>" +
+                                    $"Total Fuel: {totalFuel} liters<br>" +
+                                    $"Total Cost: {cost} TL";
+            }
+            else
+            {
+                ViewBag.CarResult = "Selected car information not found or invalid.";
+            }
+
+            return View("Index");
+        }
+
+        [HttpGet]
+        public IActionResult GetModels(string brand)
+        {
+            var models = _context.CarDatas
+                .Where(c => c.Brand == brand)
+                .Select(c => c.Model)
+                .Distinct()
+                .ToList();
+
+            if (models == null || !models.Any())
+            {
+                return Json(new List<string> {   "No models available" } );
+            }
+
+            return Json(models);
+        }
+
+        [HttpGet]
+        public IActionResult GetGenerations(string brand, string model)
+        {
+            var generations = _context.CarDatas
+                .Where(c => c.Brand == brand && c.Model == model)
+                .Select(c => c.Generation)
+                .Distinct()
+                .ToList();
+
+            if (generations == null || !generations.Any())
+            {
+                return Json(new List<string> { "No generations available" });
+            }
+
+            return Json(generations);
+        }
+
+
+
+        [HttpGet]
+        public IActionResult GetYears(string brand, string model, string generation)
+        {
+            var years = _context.CarDatas
+                .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation)
+                .Select(c => c.Year)
+                .Distinct()
+                .ToList();
+            /*if (years == null || !years.Any())
+            {
+                return Json(new List<string> { "No years available" });
+            }
+            return Json(years); 
+            */
+            return Json(years.Any() ? years : new List<string> { "No years available" });
+        }
+
+        [HttpGet]
+        public IActionResult GetEngines(string brand, string model, string generation, string year)
+        {
+            var engines = _context.CarDatas
+                .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year)
+                .Select(c => c.Engine)
+                .Distinct()
+                .ToList();
+
+            return Json(engines.Any() ? engines : new List<string> { "No engines available" });
+        }
+
+        [HttpGet]
+        public IActionResult GetFuelTypes(string brand, string model, string generation, string year, string engine)
+        {
+            var fuels = _context.CarDatas
+                .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine)
+                .Select(c => c.Fuel)
+                .Distinct()
+                .ToList();
+
+            return Json(fuels.Any() ? fuels : new List<string> { "No fuel types available" });
+        }
+
+        // Yeni eklenen GetCityConsumption metodunu burada tanımlıyoruz
+        [HttpGet]
+        public IActionResult GetCityConsumption(string brand, string model, string generation, string year, string engine, string fuel)
+        {
+            var carData = _context.CarDatas
+                .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
+
+            if (carData != null)
+            {
+                Console.WriteLine($"City Consumption for {brand} {model}: {carData.CityConsumption}");
+                return Json(new { cityConsumption = carData.CityConsumption });
+            }
+            Console.WriteLine("City Consumption not found.");
+            return Json(new { cityConsumption = "Not available" });
+        }
+
+
+
+
+
 
         private string GetFuelPrice(string fuelTypeLabel)
         {
@@ -83,10 +247,11 @@ namespace GasCalculationWebApp.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error fetching fuel price: {ex.Message}");
             }
 
             return null;
         }
     }
 }
+

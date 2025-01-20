@@ -1,7 +1,14 @@
+using Microsoft.EntityFrameworkCore; // DbContext için gerekli
+using GasCalculationWebApp.Data;     // ApplicationDbContext'e eriþim için gerekli
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();  // MVC'yi ekleyin
+
+// Veritabaný baðlantýsý (ConnectionString'i appsettings.json'dan alýyor)
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

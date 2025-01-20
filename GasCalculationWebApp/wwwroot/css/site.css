@@ -128,3 +128,16 @@ footer {
     padding: 20px;
     text-align: center;
 }
+select {
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+#loading {
+    font-size: 1rem;
+    color: blue;
+    display: block;
+    margin: 10px auto;
+}
