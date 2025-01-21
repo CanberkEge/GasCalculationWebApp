@@ -24,7 +24,7 @@ namespace GasCalculationWebApp.Controllers
         {
             // Marka listesini dropdown için gönder
            // List<string> brands = _context.CarDatas
-           var brands = _context.CarDatas
+           var brands = _context.CarDatas2
                 .Select(c => c.Brand)
                 .Distinct()
                 .ToList();
@@ -76,7 +76,7 @@ namespace GasCalculationWebApp.Controllers
                              $"Total price = {totalPrice} TL<br>" +
                              $"Round trip price = {roundTripPrice} TL";
 
-            ViewBag.Brands = _context.CarDatas
+            ViewBag.Brands = _context.CarDatas2
                 .Select(c => c.Brand)
                 .Distinct()
                 .ToList();
@@ -87,45 +87,94 @@ namespace GasCalculationWebApp.Controllers
         [HttpPost]
         public IActionResult CalculateByCar(string brand, string model, string generation, string year, string engine, string fuel, double distance)
         {
-            var selectedCar = _context.CarDatas
+            var selectedCar = _context.CarDatas2
                 .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
 
-            if (selectedCar != null)
+            if (selectedCar == null)
             {
 
+                ViewBag.CarResult = "Selected car information not found. Please check your selections.";
+                return View("Index");
 
-                //eski hali: double fuelConsumption = selectedCar.CityConsumption;
-                double fuelConsumption = selectedCar.CityConsumption;
+            }
+
+            string fuelTypeNormalized = selectedCar.Fuel.ToLower().Trim();
+            var fuelTypeLabels = new Dictionary<string, string>
+    {
+        { "benzin", "V/Max Kurşunsuz 95" },
+        { "dizel", "V/Max Diesel" },
+        { "lpg", "PO/gaz Otogaz" }
+    };
 
 
+            if (!fuelTypeLabels.ContainsKey(fuelTypeNormalized))
+            {
+                ViewBag.CarResult = $"Fuel type '{selectedCar.Fuel}' not found in fuelTypeLabels.";
+                return View("Index");
+            }
 
+            string fuelTypeLabel = fuelTypeLabels[fuelTypeNormalized];
+            string priceText = GetFuelPrice(fuelTypeLabel);
 
-                // double fuelConsumption = selectedCar.CityConsumption.HasValue
-                //   ? selectedCar.CityConsumption.Value
-                // : 0.0; // Varsayılan değer olarak float türünde 0.0 kullanıyoruz
+            if (string.IsNullOrEmpty(priceText))
+            {
+                ViewBag.CarResult = $"Unable to fetch fuel price for '{fuelTypeLabel}'.";
+                return View("Index");
+            }
 
+            if (!decimal.TryParse(priceText.Replace(".", ","), out var fuelPrice))
+            {
+                ViewBag.CarResult = "Invalid fuel price format received. Please try again.";
+                return View("Index");
+            }
 
+            //eski hali: double fuelConsumption = selectedCar.CityConsumption;
+            decimal fuelConsumption = selectedCar.CityConsumption;
+                // decimal fuelPrice;
+                if (fuelConsumption <= 0) {
 
-                string priceText = GetFuelPrice(selectedCar.Fuel);
-                if (!double.TryParse(priceText.Replace(".", ","), out double fuelPrice))
-                {
-                    ViewBag.CarResult = "Unable to fetch fuel price.";
+                    ViewBag.CarResult = "Fuel consumption data for the selected car is invalid.";
                     return View("Index");
                 }
 
-                double totalFuel = Math.Round((distance / 100) * fuelConsumption, 2);
-                double cost = Math.Round(totalFuel * fuelPrice, 2);
 
-                ViewBag.CarResult = $"Car: {brand} {model} ({generation})<br>" +
+
+                
+                                            // double fuelConsumption = selectedCar.CityConsumption.HasValue
+                                            //   ? selectedCar.CityConsumption.Value
+                                            // : 0.0; // Varsayılan değer olarak float türünde 0.0 kullanıyoruz
+
+
+
+             /*string priceText = GetFuelPrice(selectedCar.Fuel);
+             if (string.IsNullOrEmpty(priceText))
+             {
+                 ViewBag.CarResult = "Unable to fetch fuel price.";
+                 return View("Index");
+             }
+
+             // Yakıt fiyatını decimal'e dönüştür
+             if (!decimal.TryParse(priceText.Replace(".", ","), out var fuelPrice))
+             {
+                 ViewBag.CarResult = "Invalid fuel price format received. Please try again.";
+                 return View("Index");
+             }
+             */
+            
+
+           // decimal fuelPrice = 20.00m; // Sabit fiyat
+
+            decimal totalFuel = Math.Round((decimal)(distance / 100) * fuelConsumption, 2);
+                decimal cost = Math.Round(totalFuel * fuelPrice, 2);
+
+                ViewBag.CarResult = $"Car: {brand} {model} ({generation}, {year}, {engine})<br>" +
+                                    $"Fuel Type: {fuel}<br>" +
                                     $"Fuel Consumption: {fuelConsumption} L/100km<br>" +
                                     $"Fuel Price: {fuelPrice} TL/L<br>" +
                                     $"Total Fuel: {totalFuel} liters<br>" +
                                     $"Total Cost: {cost} TL";
-            }
-            else
-            {
-                ViewBag.CarResult = "Selected car information not found or invalid.";
-            }
+            
+           
 
             return View("Index");
         }
@@ -133,7 +182,7 @@ namespace GasCalculationWebApp.Controllers
         [HttpGet]
         public IActionResult GetModels(string brand)
         {
-            var models = _context.CarDatas
+            var models = _context.CarDatas2
                 .Where(c => c.Brand == brand)
                 .Select(c => c.Model)
                 .Distinct()
@@ -150,7 +199,7 @@ namespace GasCalculationWebApp.Controllers
         [HttpGet]
         public IActionResult GetGenerations(string brand, string model)
         {
-            var generations = _context.CarDatas
+            var generations = _context.CarDatas2
                 .Where(c => c.Brand == brand && c.Model == model)
                 .Select(c => c.Generation)
                 .Distinct()
@@ -169,7 +218,7 @@ namespace GasCalculationWebApp.Controllers
         [HttpGet]
         public IActionResult GetYears(string brand, string model, string generation)
         {
-            var years = _context.CarDatas
+            var years = _context.CarDatas2
                 .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation)
                 .Select(c => c.Year)
                 .Distinct()
@@ -186,7 +235,7 @@ namespace GasCalculationWebApp.Controllers
         [HttpGet]
         public IActionResult GetEngines(string brand, string model, string generation, string year)
         {
-            var engines = _context.CarDatas
+            var engines = _context.CarDatas2
                 .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year)
                 .Select(c => c.Engine)
                 .Distinct()
@@ -198,7 +247,7 @@ namespace GasCalculationWebApp.Controllers
         [HttpGet]
         public IActionResult GetFuelTypes(string brand, string model, string generation, string year, string engine)
         {
-            var fuels = _context.CarDatas
+            var fuels = _context.CarDatas2
                 .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine)
                 .Select(c => c.Fuel)
                 .Distinct()
@@ -211,7 +260,7 @@ namespace GasCalculationWebApp.Controllers
         [HttpGet]
         public IActionResult GetCityConsumption(string brand, string model, string generation, string year, string engine, string fuel)
         {
-            var carData = _context.CarDatas
+            var carData = _context.CarDatas2
                 .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
 
             if (carData != null)
@@ -239,10 +288,16 @@ namespace GasCalculationWebApp.Controllers
 
                 if (fuelTypeNode != null)
                 {
+                    Console.WriteLine($"Fuel Type Node Found: {fuelTypeNode.InnerText}");
                     string priceText = fuelTypeNode.InnerText.Trim();
                     int startIndex = priceText.IndexOf(fuelTypeLabel) + fuelTypeLabel.Length;
                     int endIndex = priceText.IndexOf("TL", startIndex);
-                    return priceText.Substring(startIndex, endIndex - startIndex).Trim();
+                    string result = priceText.Substring(startIndex, endIndex - startIndex).Trim();
+                    Console.WriteLine($"Extracted Price Text: {result}");
+                    return result;
+                }
+                else {
+                    Console.WriteLine($"Fuel Type Node Not Found for: {fuelTypeLabel}");
                 }
             }
             catch (Exception ex)

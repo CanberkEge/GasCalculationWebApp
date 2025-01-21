@@ -66,10 +66,13 @@
                 <label for="brand">Brand:</label>
                 <select id="brand" name="brand" onchange="loadModels()" required>
                     <option value="">Select Brand</option>
-                    @foreach (var brand in ViewBag.Brands as List<string>)
+                    @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
+                        {
+                    foreach (var brand in ViewBag.Brands as List<string>)
                     {
                         <option value="@brand">@brand</option>
                     }
+                        }
                     else
                     {
                     <option value="">No brands available</option>
@@ -122,7 +125,15 @@
     <section class="result-section">
         <h3>Car Selection Results</h3>
         <div id="car-result">
-            <p style="color: red;" id="city-consumption">Select a car to see the fuel consumption.</p>
+            @if (ViewBag.CarResult != null)
+            {
+                <p>@Html.Raw(ViewBag.CarResult)</p>
+            }
+            else
+            {
+                <p style="color: red;">Select a car to see the fuel consumption.</p>
+            }
+            
         </div>
     </section>
 

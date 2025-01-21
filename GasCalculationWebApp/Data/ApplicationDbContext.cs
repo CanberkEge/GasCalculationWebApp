@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using GasCalculationWebApp.Models;
+using GasCalculationWebApp.Model;
 
 namespace GasCalculationWebApp.Data
 {
@@ -8,18 +8,29 @@ namespace GasCalculationWebApp.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-        public DbSet<CarDatas> CarDatas { get; set; }
+       // public DbSet<CarDatas> CarDatas { get; set; }
+
+        public DbSet<CarData2> CarDatas2 { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Burada kolon yapılandırmalarınızı yapabilirsiniz
-            modelBuilder.Entity<CarDatas>()
-                .Property(c => c.CityConsumption)
-                .HasConversion<double>(); // CityConsumption verisini double olarak işle
+            // CarDatas yapılandırması
+            /*   modelBuilder.Entity<CarDatas>()
+                   .Property(c => c.CityConsumption)
+                   .HasConversion<double>();
 
-            modelBuilder.Entity<CarDatas>()
+               modelBuilder.Entity<CarDatas>()
+                   .Property(c => c.OutsideConsumption)
+                   .HasConversion<double>();
+            */
+            // CarData2 yapılandırması
+            modelBuilder.Entity<CarData2>()
+                .Property(c => c.CityConsumption)
+                .HasColumnType("decimal(5,2)"); // Veritabanı türü olarak decimal(5,2)
+
+            modelBuilder.Entity<CarData2>()
                 .Property(c => c.OutsideConsumption)
-                .HasConversion<double>(); // OutsideConsumption verisini double olarak işle
+                .HasColumnType("decimal(5,2)"); // Veritabanı türü olarak decimal(5,2)
         }
     }
 }
