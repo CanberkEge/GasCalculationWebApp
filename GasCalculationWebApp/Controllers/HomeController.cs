@@ -87,6 +87,8 @@ namespace GasCalculationWebApp.Controllers
         [HttpPost]
         public IActionResult CalculateByCar(string brand, string model, string generation, string year, string engine, string fuel, double distance)
         {
+            //yeni eklendi
+            ReloadDropdowns();
             var selectedCar = _context.CarDatas2
                 .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
 
@@ -94,6 +96,7 @@ namespace GasCalculationWebApp.Controllers
             {
 
                 ViewBag.CarResult = "Selected car information not found. Please check your selections.";
+                
                 return View("Index");
 
             }
@@ -128,53 +131,56 @@ namespace GasCalculationWebApp.Controllers
                 return View("Index");
             }
 
-            //eski hali: double fuelConsumption = selectedCar.CityConsumption;
-            decimal fuelConsumption = selectedCar.CityConsumption;
-                // decimal fuelPrice;
-                if (fuelConsumption <= 0) {
+            decimal cityConsumption = selectedCar.CityConsumption;
+            decimal outsideConsumption = selectedCar.OutsideConsumption;
 
-                    ViewBag.CarResult = "Fuel consumption data for the selected car is invalid.";
-                    return View("Index");
-                }
+            if (cityConsumption <= 0 || outsideConsumption <= 0)
+            {
+                ViewBag.CarResult = "Fuel consumption data for the selected car is invalid.";
+                return View("Index");
+            }
 
+            /* decimal fuelConsumption = selectedCar.CityConsumption;
 
+                 if (fuelConsumption <= 0) {
 
-                
-                                            // double fuelConsumption = selectedCar.CityConsumption.HasValue
-                                            //   ? selectedCar.CityConsumption.Value
-                                            // : 0.0; // Varsayılan değer olarak float türünde 0.0 kullanıyoruz
+                     ViewBag.CarResult = "Fuel consumption data for the selected car is invalid.";
+                     return View("Index");
+                 }
 
-
-
-             /*string priceText = GetFuelPrice(selectedCar.Fuel);
-             if (string.IsNullOrEmpty(priceText))
-             {
-                 ViewBag.CarResult = "Unable to fetch fuel price.";
-                 return View("Index");
-             }
-
-             // Yakıt fiyatını decimal'e dönüştür
-             if (!decimal.TryParse(priceText.Replace(".", ","), out var fuelPrice))
-             {
-                 ViewBag.CarResult = "Invalid fuel price format received. Please try again.";
-                 return View("Index");
-             }
              */
-            
 
-           // decimal fuelPrice = 20.00m; // Sabit fiyat
+            // Şehir içi hesaplaması
+            decimal totalCityFuel = Math.Round((decimal)(distance / 100) * cityConsumption, 2);
+            decimal cityCost = Math.Round(totalCityFuel * fuelPrice, 2);
 
-            decimal totalFuel = Math.Round((decimal)(distance / 100) * fuelConsumption, 2);
+            // Şehir dışı hesaplaması
+            decimal totalOutsideFuel = Math.Round((decimal)(distance / 100) * outsideConsumption, 2);
+            decimal outsideCost = Math.Round(totalOutsideFuel * fuelPrice, 2);
+
+
+
+
+            /*
+                decimal totalFuel = Math.Round((decimal)(distance / 100) * fuelConsumption, 2);
                 decimal cost = Math.Round(totalFuel * fuelPrice, 2);
+            */
 
-                ViewBag.CarResult = $"Car: {brand} {model} ({generation}, {year}, {engine})<br>" +
-                                    $"Fuel Type: {fuel}<br>" +
-                                    $"Fuel Consumption: {fuelConsumption} L/100km<br>" +
-                                    $"Fuel Price: {fuelPrice} TL/L<br>" +
-                                    $"Total Fuel: {totalFuel} liters<br>" +
-                                    $"Total Cost: {cost} TL";
-            
-           
+            // Sonuçları göster
+            ViewBag.CarResult = $"<b>Car:</b> {brand} {model} ({generation}, {year}, {engine})<br>" +
+                                $"<b>Fuel Type:</b> {fuel}<br>" +
+                                $"<b>Urban Fuel Consumption:</b> {cityConsumption} L/100km<br>" +
+                                $"<b>Distance:</b> {distance} km<br>" +
+                                $"<b>Out of Town Fuel Consumption:</b> {outsideConsumption} L/100km<br>" +
+                                $"<b>Fuel Price for {fuel}:</b> {fuelPrice} TL/L<br><br>" +
+                                $"<u><b>Urban Driving:</b></u><br>" +
+                                $"Total Fuel: {totalCityFuel} liters<br>" +
+                                $"Total Cost: {cityCost} TL<br><br>" +
+                                $"<u><b>Out of Town Driving:</b></u><br>" +
+                                $"Total Fuel: {totalOutsideFuel} liters<br>" +
+                                $"Total Cost: {outsideCost} TL";
+
+
 
             return View("Index");
         }
@@ -307,6 +313,19 @@ namespace GasCalculationWebApp.Controllers
 
             return null;
         }
+
+        private void ReloadDropdowns()
+        {
+            // Marka listesini tekrar yükle
+            ViewBag.Brands = _context.CarDatas2
+                .Select(c => c.Brand)
+                .Distinct()
+                .ToList();
+        }
+
+
+
+
     }
 }
 
