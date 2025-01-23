@@ -70,7 +70,7 @@ namespace GasCalculationWebApp.Controllers
             double totalPrice = Math.Round(totalGasSpend * price, 2);
             double roundTripPrice = Math.Round(totalPrice * 2, 2);
 
-            ViewBag.Result = $"Fuel Type: {fuelTypeLabel}<br>" +
+            ViewBag.Result = $"Fuel Type: {fuelType}<br>" +
                              $"Price per liter: {price} TL<br>" +
                              $"Total fuel consumption = {totalGasSpend} liters<br>" +
                              $"Total price = {totalPrice} TL<br>" +
