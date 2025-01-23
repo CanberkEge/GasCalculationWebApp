@@ -60,6 +60,42 @@
         </div>
     </section>
 
+
+    <script>
+        // Girdi alanlarına nokta formatlama eklemek için ortak bir fonksiyon
+        function formatNumberInput(inputElement) {
+            inputElement.addEventListener('input', function (e) {
+                // Yalnızca sayıları al
+                let value = e.target.value.replace(/\D/g, '');
+
+                // Nokta eklemek için formatlama
+                let formattedValue = value
+                    .split('')
+                    .reverse()
+                    .join('')
+                    .match(/.{1,3}/g)
+                    .join('.')
+                    .split('')
+                    .reverse()
+                    .join('');
+
+                // Formatlanmış değeri input alanına yaz
+                e.target.value = formattedValue;
+            });
+        }
+
+        // Distance ve AverageGasSpend alanlarına formatlama ekle
+        formatNumberInput(document.getElementById('distance'));
+        formatNumberInput(document.getElementById('averageGasSpend'));
+    </script>
+
+
+
+
+
+
+
+
     <!-- Car Selection Form -->
     <section class="form-section">
         <h3>Calculate Fuel Costs (Car Selection)</h3>
@@ -123,6 +159,30 @@
             <button type="submit" class="btn">Calculate</button>
         </form>
     </section>
+
+
+    <script>
+        // Giriş alanını seçiyoruz
+        const distanceInputCar = document.getElementById('distanceCar');
+
+        // Kullanıcı girişini dinleyip formatlıyoruz
+        distanceInputCar.addEventListener('input', (e) => {
+            // Giriş değerini al ve tüm noktaları kaldır
+            let value = e.target.value.replace(/\./g, '');
+
+            // Eğer sadece sayı değilse giriş yapma
+            if (!/^\d*$/.test(value)) {
+                return;
+            }
+
+            // Sayıyı 3'lü gruplar halinde noktalı formatla
+            e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        });
+    </script>
+
+
+
+
 
     <section class="result-section">
         <h2>Car Selection Results</h2>

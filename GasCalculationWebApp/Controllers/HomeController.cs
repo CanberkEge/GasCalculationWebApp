@@ -70,11 +70,19 @@ namespace GasCalculationWebApp.Controllers
             double totalPrice = Math.Round(totalGasSpend * price, 2);
             double roundTripPrice = Math.Round(totalPrice * 2, 2);
 
-            ViewBag.Result = $"Fuel Type: {fuelType}<br>" +
+            // Fuel type baş harfini büyük yapma
+            string formattedFuelType = char.ToUpper(fuelType[0]) + fuelType.Substring(1);
+
+            // Sayıları formatlamak (iki ondalık basamak göstermek için "N2" kullanıyoruz)
+            string formattedTotalGasSpend = totalGasSpend.ToString("N2");
+            string formattedTotalPrice = totalPrice.ToString("N2");
+            string formattedRoundTripPrice = roundTripPrice.ToString("N2");
+
+            ViewBag.Result = $"Fuel Type: {formattedFuelType}<br>" +
                              $"Price per liter: {price} TL<br>" +
-                             $"Total fuel consumption = {totalGasSpend} liters<br>" +
-                             $"Total price = {totalPrice} TL<br>" +
-                             $"Round trip price = {roundTripPrice} TL";
+                             $"Total fuel consumption = {formattedTotalGasSpend} liters<br>" +
+                             $"Total price = {formattedTotalPrice} TL<br>" +
+                             $"Round trip price = {formattedRoundTripPrice} TL";
 
             ViewBag.Brands = _context.CarDatas2
                 .Select(c => c.Brand)
@@ -158,6 +166,20 @@ namespace GasCalculationWebApp.Controllers
             decimal totalOutsideFuel = Math.Round((decimal)(distance / 100) * outsideConsumption, 2);
             decimal outsideCost = Math.Round(totalOutsideFuel * fuelPrice, 2);
 
+            // Şehir içi ve dışı maliyet farkını hesaplama
+            decimal costDifference = Math.Abs(cityCost - outsideCost); // Farkın pozitif görünmesi için Math.Abs kullanıyoruz
+
+            // Şehir içi ve dışı tüketim farkını hesaplama
+            decimal fuelDifference = Math.Abs(totalCityFuel - totalOutsideFuel);
+
+            // Sayıyı formatlamak (iki ondalık basamak göstermek için "N2" kullanıyoruz)
+
+            string formattedTotalCityFuel = totalCityFuel.ToString("N2");
+            string formattedCityCost = cityCost.ToString("N2");
+            string formattedTotalOutsideFuel = totalOutsideFuel.ToString("N2");
+            string formattedOutsideCost = outsideCost.ToString("N2");
+            string formattedCostDifference = costDifference.ToString("N2");
+            string formattedFuelDifference = fuelDifference.ToString("N2");
 
 
 
@@ -174,11 +196,14 @@ namespace GasCalculationWebApp.Controllers
                                 $"<b>Out of Town Fuel Consumption:</b> {outsideConsumption} L/100km<br>" +
                                 $"<b>Fuel Price for {fuel}:</b> {fuelPrice} TL/L<br><br>" +
                                 $"<u><b>Urban Driving:</b></u><br>" +
-                                $"Total Fuel: {totalCityFuel} liters<br>" +
-                                $"Total Cost: {cityCost} TL<br><br>" +
+                                $"Total Fuel: {formattedTotalCityFuel} liters<br>" +
+                                $"Total Cost: {formattedCityCost} TL<br><br>" +
                                 $"<u><b>Out of Town Driving:</b></u><br>" +
-                                $"Total Fuel: {totalOutsideFuel} liters<br>" +
-                                $"Total Cost: {outsideCost} TL";
+                                $"Total Fuel: {formattedTotalOutsideFuel} liters<br>" +
+                                $"Total Cost: {formattedOutsideCost} TL<br><br>" +
+                                $"<u><b>Difference:</b></u><br>" +
+                                $"Cost Difference (Şehir İçi - Şehir Dışı): {formattedCostDifference}₺<br>" +
+                                $"Fuel Difference (Şehir İçi - Şehir Dışı): {formattedFuelDifference}L";
 
 
 
