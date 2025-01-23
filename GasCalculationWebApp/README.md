@@ -70,13 +70,13 @@ dotnet run
 
 
 ## How to Use
-- **Manual Calculation**
+- ***Manual Calculation***
 - Navigate to the "Manual Input" section.
 - Select the fuel type (e.g., Benzin, Dizel, LPG).
 - Enter the average gas consumption in liters per 100 km.
 - Specify the distance to calculate fuel costs.
 - Click Calculate to see the results.
-- **Car-Based Calculation**
+- ***Car-Based Calculation***
 - Navigate to the "Car Selection" section.
 - Select the car's Brand, Model, Generation, Year, Engine, and Fuel Type using the dropdowns.
 - Specify the distance to calculate fuel costs.
