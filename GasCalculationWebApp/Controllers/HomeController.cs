@@ -35,6 +35,24 @@ namespace GasCalculationWebApp.Controllers
             return View();
         }
 
+        //23.01.2024 eklendi
+        
+        public IActionResult CarIndex()
+        {
+            // Marka listesini dropdown için gönder
+            ViewBag.Brands = _context.CarDatas2
+                .Select(c => c.Brand)
+                .Distinct()
+                .ToList();
+
+            return View(); // Bu, Views/Home/CarIndex.cshtml dosyasını yükleyecek
+        }
+
+
+
+
+        
+
         [HttpPost]
         public IActionResult Calculate(string fuelType, double distance, double averageGasSpend)
         {
@@ -92,7 +110,30 @@ namespace GasCalculationWebApp.Controllers
             return View("Index");
         }
 
-        [HttpPost]
+        
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            [HttpPost]
         public IActionResult CalculateByCar(string brand, string model, string generation, string year, string engine, string fuel, double distance)
         {
             //yeni eklendi
@@ -207,7 +248,7 @@ namespace GasCalculationWebApp.Controllers
 
 
 
-            return View("Index");
+            return View("CarIndex");
         }
 
         [HttpGet]

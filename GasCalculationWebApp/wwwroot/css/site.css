@@ -30,9 +30,13 @@ body {
 }
 
 body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
     background-color: #f5f5f7;
     color: #333;
     line-height: 1.6;
+    padding-top: 60px; /* Navigasyon yüksekliði kadar boþluk */
 }
 
 header {
@@ -141,3 +145,44 @@ select {
     display: block;
     margin: 10px auto;
 }
+
+/* Navigasyon genel stil */
+nav {
+    position: fixed; /* Üstte sabit kalsýn */
+    top: 0;
+    left: 0;
+    width: 100%; /* Tüm geniþliði kaplasýn */
+    background-color: #444; /* Arka plan rengi */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hafif gölge */
+    z-index: 1000; /* Diðer içeriklerin önünde */
+    padding: 10px 0;
+}
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center; /* Ortaya hizala */
+        gap: 30px; /* Menü öðeleri arasý boþluk */
+        margin: 0;
+        padding: 0;
+    }
+
+        nav ul li {
+            display: inline;
+        }
+
+            nav ul li a {
+                text-decoration: none; /* Alt çizgi olmasýn */
+                color: #fff; /* Beyaz yazý */
+                font-size: 1.5rem; /* Yazý boyutunu büyüt */
+                font-weight: bold; /* Kalýn yazý */
+                padding: 10px 15px; /* Ýç boþluk */
+                border-radius: 5px; /* Hafif yuvarlak köþeler */
+                transition: background-color 0.3s, color 0.3s; /* Hover efekti */
+            }
+
+                nav ul li a:hover {
+                    background-color: #555; /* Hover için arka plan rengi */
+                    color: #ddd; /* Hover için yazý rengi */
+                }
+

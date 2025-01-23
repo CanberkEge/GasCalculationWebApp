@@ -17,6 +17,14 @@
         </div>
     </header>
 
+
+    <nav>
+        <ul>
+            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li><a href="@Url.Action("CarIndex", "Home")">Calculate By Car</a></li>
+        </ul>
+    </nav>
+
     <section class="hero">
         <div class="hero-content">
             <h2>Fuel Calculator</h2>
@@ -29,7 +37,8 @@
     <!-- Manuel Yakıt Tüketimi Hesaplama Formu -->
     <section class="form-section">
         <h3>Calculate Fuel Costs (Manual Input)</h3>
-        <form method="post" action="/Home/Calculate" class="form">
+        <form method="post" action="/Home/Calculate" class="form" onsubmit="return handleSubmit(this);">
+            <!-- Eklenen id="fuelForm" -->
             <div class="form-group">
                 <label for="fuelType">Fuel Type:</label>
                 <select id="fuelType" name="fuelType">
@@ -50,15 +59,23 @@
         </form>
     </section>
 
-    <section class="result-section">
+    <section class="result-section" id="result-section">
+        <!-- Eklenen id="resultSection" -->
         <h3>Manual Input Results</h3>
+
+        
+
+        
         <div id="result">
             @if (ViewBag.Result != null)
             {
                 <p>@Html.Raw(ViewBag.Result)</p>
             }
         </div>
+        
     </section>
+
+
 
 
     <script>
@@ -84,301 +101,43 @@
             });
         }
 
+
+
         // Distance ve AverageGasSpend alanlarına formatlama ekle
         formatNumberInput(document.getElementById('distance'));
         formatNumberInput(document.getElementById('averageGasSpend'));
+
+    </script>
+
+        <script>
+        // Kaydırma işlemini ekleyen JavaScript fonksiyonu
+        function handleSubmit(form) {
+            // Sayfa gönderimi sonrası kaydırmayı etkinleştir
+            setTimeout(() => {
+                const resultSection = document.getElementById('result-section');
+                if (resultSection) {
+                    resultSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }, 500); // 500ms gecikme, sonucu beklemek için
+            return true; // Form gönderimini devam ettir
+        }
     </script>
 
 
+    
 
 
-
-
-
-
-    <!-- Car Selection Form -->
-    <section class="form-section">
-        <h3>Calculate Fuel Costs (Car Selection)</h3>
-        <form method="post" action="/Home/CalculateByCar" class="form">
-            <div class="form-group">
-                <label for="brand">Brand:</label>
-                <select id="brand" name="brand" onchange="loadModels()" required>
-                    <option value="">Select Brand</option>
-                    @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
-                        {
-                    foreach (var brand in ViewBag.Brands as List<string>)
-                    {
-                        <option value="@brand">@brand</option>
-                    }
-                        }
-                    else
-                    {
-                    <option value="">No brands available</option>
-                    }
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="model">Model:</label>
-                <select id="model" name="model" onchange="loadGenerations()" required>
-                    <option value="">Select Model</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="generation">Generation:</label>
-                <select id="generation" name="generation" onchange="loadYears()" required>
-                    <option value="">Select Generation</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="year">Year:</label>
-                <select id="year" name="year" onchange="loadEngines()" required>
-                    <option value="">Select Year</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="engine">Engine:</label>
-                <select id="engine" name="engine" onchange="loadFuelTypes()" required>
-                    <option value="">Select Engine</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="fuel">Fuel:</label>
-                <select id="fuel" name="fuel"  required>
-                    <option value="">Select Fuel Type</option>
-                </select>
-            </div>
-
-            <div id="city-consumption-container">
-                <span id="city-consumption">City Consumption: Not available</span>
-            </div>
-
-            <div class="form-group">
-                <label for="distanceCar">Distance (km):</label>
-                <input type="text" id="distanceCar" name="distance" required />
-            </div>
-            <button type="submit" class="btn">Calculate</button>
-        </form>
-    </section>
-
-
-    <script>
-        // Giriş alanını seçiyoruz
-        const distanceInputCar = document.getElementById('distanceCar');
-
-        // Kullanıcı girişini dinleyip formatlıyoruz
-        distanceInputCar.addEventListener('input', (e) => {
-            // Giriş değerini al ve tüm noktaları kaldır
-            let value = e.target.value.replace(/\./g, '');
-
-            // Eğer sadece sayı değilse giriş yapma
-            if (!/^\d*$/.test(value)) {
-                return;
-            }
-
-            // Sayıyı 3'lü gruplar halinde noktalı formatla
-            e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        });
-    </script>
-
-
-
-
-
-    <section class="result-section">
-        <h2>Car Selection Results</h2>
-        <div id="car-result">
-            @if (ViewBag.CarResult != null)
-            {
-                <p>@Html.Raw(ViewBag.CarResult)</p>
-            }
-            else
-            {
-                <p style="color: red;">Select a car to see the fuel consumption.</p>
-            }
-            
-        </div>
-    </section>
+    
+    
 
     <footer>
         <p>© 2025 Gas Calculation. All Rights Reserved.</p>
     </footer>
 
-    <!-- Dinamik Dropdown ve CityConsumption JavaScript -->
-    <script>
-        // City consumption'ı güncelleyen fonksiyon
-        function updateCityConsumption() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const generation = document.getElementById('generation').value;
-            const year = document.getElementById('year').value;
-            const engine = document.getElementById('engine').value;
-            const fuel = document.getElementById('fuel').value;
-
-            // Seçilen tüm parametrelerin dolu olup olmadığını kontrol et
-            if (brand && model && generation && year && engine && fuel) {
-                console.log(`Fetching city consumption for: ${brand}, ${model}, ${generation}, ${year}, ${engine}, ${fuel}`);
-                fetch(`/Home/GetCityConsumption?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('City consumption data:', data);
-                        // CityConsumption verisini ekranda göster
-                        if (data && data.cityConsumption) 
-                        {
-                    document.getElementById('city-consumption').textContent = `City Consumption: ${data.cityConsumption} L/100km`;
-                }
-
-                else {
-                    document.getElementById('city-consumption').textContent = "City Consumption: Not available";
-                }
-                        
-                    })
-                    .catch(error => {console.error("Error fetching city consumption:", error);
-                    document.getElementById('city-consumption').textContent = "City Consumption: Error fetching data";
-            });
-                   }
-                   else {
-                   // Veriler eksikse, CityConsumption'ı "Not available" olarak bırak
-                document.getElementById('city-consumption').textContent = "City Consumption: Not available";
-            }
-            }
-            
-        
-
-                
-        
-
-        // Marka seçildiğinde modelleri yükle
-        function loadModels() {
-            const brand = document.getElementById('brand').value;
-            const modelSelect = document.getElementById('model');
-            modelSelect.innerHTML = '<option value="">Select Model</option>';
-
-            fetch(`/Home/GetModels?brand=${encodeURIComponent(brand)}`)
-                .then(response => response.json())
-                .then(models => {
-                    if (models.length === 1 && models[0] === "No models available") {
-                        modelSelect.innerHTML = '<option value="">No models available</option>';
-                    } else {
-                        models.forEach(model => {
-                            const option = document.createElement('option');
-                            option.value = model;
-                            option.textContent = model;
-                            modelSelect.appendChild(option);
-                        });
-                    }
-                    updateCityConsumption();  // Model seçildikten sonra city consumption'ı güncelle
-                })
-                .catch(error => console.error("Error loading models:", error));
-        }
-
-        // Model seçildiğinde nesilleri yükle
-        function loadGenerations() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const generationSelect = document.getElementById('generation');
-            generationSelect.innerHTML = '<option value="">Select Generation</option>';
-
-            fetch(`/Home/GetGenerations?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`)
-                .then(response => response.json())
-                .then(generations => {
-                    if (generations.length === 1 && generations[0] === "No generations available") {
-                        generationSelect.innerHTML = '<option value="">No generations available</option>';
-                    } else {
-                        generations.forEach(generation => {
-                            const option = document.createElement('option');
-                            option.value = generation;
-                            option.textContent = generation;
-                            generationSelect.appendChild(option);
-                        });
-                    }
-                    updateCityConsumption();  // Nesil seçildikten sonra city consumption'ı güncelle
-                })
-                .catch(error => console.error("Error loading generations:", error));
-        }
-
-        // Nesil seçildiğinde yılları yükle
-        function loadYears() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const generation = document.getElementById('generation').value;
-            const yearSelect = document.getElementById('year');
-            yearSelect.innerHTML = '<option value="">Select Year</option>';
-
-            fetch(`/Home/GetYears?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}`)
-                .then(response => response.json())
-                .then(years => {
-                    if (years.length === 1 && years[0] === "No years available") {
-                        yearSelect.innerHTML = '<option value="">No years available</option>';
-                    } else {
-                        years.forEach(year => {
-                            const option = document.createElement('option');
-                            option.value = year;
-                            option.textContent = year;
-                            yearSelect.appendChild(option);
-                        });
-                    }
-                    updateCityConsumption();  // Yıl seçildikten sonra city consumption'ı güncelle
-                })
-                .catch(error => console.error("Error loading years:", error));
-        }
-
-        // Yıl seçildiğinde motorları yükle
-        function loadEngines() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const generation = document.getElementById('generation').value;
-            const year = document.getElementById('year').value;
-            const engineSelect = document.getElementById('engine');
-            engineSelect.innerHTML = '<option value="">Select Engine</option>';
-
-            fetch(`/Home/GetEngines?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}`)
-                .then(response => response.json())
-                .then(engines => {
-                    if (engines.length === 1 && engines[0] === "No engines available") {
-                        engineSelect.innerHTML = '<option value="">No engines available</option>';
-                    } else {
-                        engines.forEach(engine => {
-                            const option = document.createElement('option');
-                            option.value = engine;
-                            option.textContent = engine;
-                            engineSelect.appendChild(option);
-                        });
-                    }
-                    updateCityConsumption();  // Motor seçildikten sonra city consumption'ı güncelle
-                })
-                .catch(error => console.error("Error loading engines:", error));
-        }
-
-        // Motor seçildiğinde yakıt türlerini yükle
-        function loadFuelTypes() {
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const generation = document.getElementById('generation').value;
-            const year = document.getElementById('year').value;
-            const engine = document.getElementById('engine').value;
-            const fuelSelect = document.getElementById('fuel');
-            fuelSelect.innerHTML = '<option value="">Select Fuel Type</option>';
-
-            fetch(`/Home/GetFuelTypes?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}`)
-                .then(response => response.json())
-                .then(fuels => {
-                    if (fuels.length === 1 && fuels[0] === "No fuel types available") {
-                        fuelSelect.innerHTML = '<option value="">No fuel types available</option>';
-                    } else {
-                        fuels.forEach(fuel => {
-                            const option = document.createElement('option');
-                            option.value = fuel;
-                            option.textContent = fuel;
-                            fuelSelect.appendChild(option);
-                        });
-                    }
-                    updateCityConsumption();  // Yakıt seçildikten sonra city consumption'ı güncelle
-                })
-                .catch(error => console.error("Error loading fuel types:", error));
-        }
-    </script>
-
-
+    
 
    
 </body>
