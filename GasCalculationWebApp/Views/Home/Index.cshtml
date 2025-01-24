@@ -21,7 +21,7 @@
     <nav>
         <ul>
             <li><a href="@Url.Action("Index", "Home")">Home</a></li>
-            <li><a href="@Url.Action("CarIndex", "Home")">Calculate By Car</a></li>
+            <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
         </ul>
     </nav>
 
@@ -35,10 +35,11 @@
 
 
     <!-- Manuel Yakıt Tüketimi Hesaplama Formu -->
+    
     <section class="form-section">
         <h3>Calculate Fuel Costs (Manual Input)</h3>
         <form method="post" action="/Home/Calculate" class="form" onsubmit="return handleSubmit(this);">
-            <!-- Eklenen id="fuelForm" -->
+            
             <div class="form-group">
                 <label for="fuelType">Fuel Type:</label>
                 <select id="fuelType" name="fuelType">
@@ -60,7 +61,8 @@
     </section>
 
     <section class="result-section" id="result-section">
-        <!-- Eklenen id="resultSection" -->
+        
+         
         <h3>Manual Input Results</h3>
 
         
@@ -75,10 +77,9 @@
         
     </section>
 
-
-
-
-    <script>
+    
+    
+        <script>
         // Girdi alanlarına nokta formatlama eklemek için ortak bir fonksiyon
         function formatNumberInput(inputElement) {
             inputElement.addEventListener('input', function (e) {
@@ -107,9 +108,9 @@
         formatNumberInput(document.getElementById('distance'));
         formatNumberInput(document.getElementById('averageGasSpend'));
 
-    </script>
+    
 
-        <script>
+        
         // Kaydırma işlemini ekleyen JavaScript fonksiyonu
         function handleSubmit(form) {
             // Sayfa gönderimi sonrası kaydırmayı etkinleştir
@@ -125,6 +126,34 @@
             return true; // Form gönderimini devam ettir
         }
     </script>
+    
+
+
+    
+
+       
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     

@@ -12,5 +12,12 @@
         public int HP { get; set; }
         public decimal CityConsumption { get; set; }
         public decimal OutsideConsumption { get; set; }
+
+
+        /*
+        public int UserId { get; set; }
+        public User User { get; set; }
+        */
+
     }
 }

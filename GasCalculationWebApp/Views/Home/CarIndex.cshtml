@@ -74,10 +74,24 @@
             </div>
             <div class="form-group">
                 <label for="fuel">Fuel:</label>
-                <select id="fuel" name="fuel" required>
+                <select id="fuel" name="fuel" onchange="loadHPs()" required>
                     <option value="">Select Fuel Type</option>
                 </select>
             </div>
+
+
+            <div class="form-group">
+                <label for="hp">Horsepower (HP):</label>
+                <select id="hp" name="hp" required>
+                    <option value="">Select HP</option>
+                    <!-- Backend'den gelen HP değerlerini doldur -->
+                </select>
+            </div>
+
+
+
+
+
 
             <div id="city-consumption-container">
                 <span id="city-consumption">City Consumption: Not available</span>
@@ -147,11 +161,12 @@
             const year = document.getElementById('year').value;
             const engine = document.getElementById('engine').value;
             const fuel = document.getElementById('fuel').value;
+            const hp = document.getElementById('hp').value;
 
             // Seçilen tüm parametrelerin dolu olup olmadığını kontrol et
             if (brand && model && generation && year && engine && fuel) {
-                console.log(`Fetching city consumption for: ${brand}, ${model}, ${generation}, ${year}, ${engine}, ${fuel}`);
-                fetch(`/Home/GetCityConsumption?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}`)
+                console.log(`Fetching city consumption for: ${brand}, ${model}, ${generation}, ${year}, ${engine}, ${fuel}, ${hp}`);
+                fetch(`/Home/GetCityConsumption?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}&hp=${encodeURIComponent(hp)}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log('City consumption data:', data);
@@ -310,6 +325,50 @@
                 })
                 .catch(error => console.error("Error loading fuel types:", error));
         }
+
+
+
+
+
+
+        //HP
+
+        function loadHPs() {
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const generation = document.getElementById('generation').value;
+            const year = document.getElementById('year').value;
+            const engine = document.getElementById('engine').value;
+            const fuel = document.getElementById('fuel').value;
+            const hpSelect = document.getElementById('hp');
+            hpSelect.innerHTML = '<option value="">Select HP</option>';
+
+            fetch(`/Home/GetHPs?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}`)
+                .then(response => response.json())
+                .then(hpValues => {
+                    if (hpValues.length === 1 && hpValues[0] === "No HP available") {
+                        hpSelect.innerHTML = '<option value="">No HP available</option>';
+                    } else {
+                        hpValues.forEach(hp => {
+                            const option = document.createElement('option');
+                            option.value = hp;
+                            option.textContent = hp;
+                            hpSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error("Error loading HPs:", error));
+        }
+
+
+
+
+
+
+
+
+
+
     </script>
 
 

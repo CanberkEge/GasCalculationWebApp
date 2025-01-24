@@ -11,6 +11,9 @@ namespace GasCalculationWebApp.Data
        // public DbSet<CarDatas> CarDatas { get; set; }
 
         public DbSet<CarData2> CarDatas2 { get; set; }
+        
+        // Kullanıcı tablosu
+        // public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

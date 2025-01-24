@@ -49,7 +49,7 @@ namespace GasCalculationWebApp.Controllers
         }
 
 
-
+        //düzeltmek için 00:46 24.01.2025
 
         
 
@@ -112,34 +112,22 @@ namespace GasCalculationWebApp.Controllers
 
         
 
-
         
 
 
 
 
+ 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-            [HttpPost]
-        public IActionResult CalculateByCar(string brand, string model, string generation, string year, string engine, string fuel, double distance)
+        [HttpPost]
+        public IActionResult CalculateByCar(string brand, string model, string generation, string year, string engine, string fuel, double distance, int hp)
         {
             //yeni eklendi
             ReloadDropdowns();
             var selectedCar = _context.CarDatas2
-                .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
+                .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel && c.HP == hp);
 
             if (selectedCar == null)
             {
@@ -230,7 +218,7 @@ namespace GasCalculationWebApp.Controllers
             */
 
             // Sonuçları göster
-            ViewBag.CarResult = $"<b>Car:</b> {brand} {model} ({generation}, {year}, {engine})<br>" +
+            ViewBag.CarResult = $"<b>Car:</b> {brand} {model} ({generation}, {year}, {engine}, {hp} HP)<br>" +
                                 $"<b>Fuel Type:</b> {fuel}<br>" +
                                 $"<b>Urban Fuel Consumption:</b> {cityConsumption} L/100km<br>" +
                                 $"<b>Distance:</b> {distance} km<br>" +
@@ -328,12 +316,37 @@ namespace GasCalculationWebApp.Controllers
             return Json(fuels.Any() ? fuels : new List<string> { "No fuel types available" });
         }
 
+
+        [HttpGet]
+        public IActionResult GetHPs(string brand, string model, string generation, string year, string engine, string fuel)
+        {
+            var hpValues = _context.CarDatas2
+                .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation &&
+                            c.Year == year && c.Engine == engine && c.Fuel == fuel)
+                .Select(c => c.HP)
+                .Distinct()
+                .ToList();
+
+            return Json(hpValues.Any() ? hpValues.Select(hp => hp.ToString()).ToList() : new List<string> { "No HP available" }); // HP değeri yoksa 0 döndür
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         // Yeni eklenen GetCityConsumption metodunu burada tanımlıyoruz
         [HttpGet]
-        public IActionResult GetCityConsumption(string brand, string model, string generation, string year, string engine, string fuel)
+        public IActionResult GetCityConsumption(string brand, string model, string generation, string year, string engine, string fuel, int hp)
         {
             var carData = _context.CarDatas2
-                .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel);
+                .FirstOrDefault(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel && c.HP == hp);
 
             if (carData != null)
             {

@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore; // DbContext için gerekli
 using GasCalculationWebApp.Data;     // ApplicationDbContext'e eriþim için gerekli
 
+
+
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,3 +37,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");  // MVC için rota
 
 app.Run();
+
+
