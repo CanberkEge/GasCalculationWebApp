@@ -1,0 +1,366 @@
+﻿@model GasCalculationWebApp.Model.CarData2
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save a Car</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="icon" type="image/x-icon" href="~/Pictures/GasStation.ico">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><i class="fas fa-car"></i> Save a Car</h1>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li>Welcome, @User.Identity.Name!</li>
+                <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
+                <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
+            }
+            else
+            {
+                <li><a href="@Url.Action("Login", "Account")">Login</a></li>
+                <li><a href="@Url.Action("Register", "Account")">Register</a></li>
+            }
+        </ul>
+    </nav>
+
+    <section class="hero-save-car">
+        <div class="hero-save-car-content">
+            <h2><i class="fas fa-save"></i> Save Your Favorite Car</h2>
+            <p>Keep track of your cars and access them easily.</p>
+        </div>
+    </section>
+
+    <!-- Save Car Form -->
+    <section class="form-section">
+        <h3>Save a Car to My Cars</h3>
+        <form method="post" action="/Car/SaveCar" class="form">
+            <div class="form-group">
+                <label for="brand"><i class="fas fa-industry"></i> Brand:</label>
+                <select id="brand" name="Brand" onchange="loadModels()" required>
+                    <option value="">Select Brand</option>
+                    @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
+                    {
+                        foreach (var brand in ViewBag.Brands as List<string>)
+                        {
+                            <option value="@brand">@brand</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="">No brands available</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="model"><i class="fas fa-car"></i> Model:</label>
+                <select id="model" name="Model" onchange="loadGenerations()" required>
+                    <option value="">Select Model</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="generation"><i class="fas fa-layer-group"></i> Generation:</label>
+                <select id="generation" name="Generation" onchange="loadYears()" required>
+                    <option value="">Select Generation</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="year"><i class="fas fa-calendar-alt"></i> Year:</label>
+                <select id="year" name="Year" onchange="loadEngines()" required>
+                    <option value="">Select Year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="engine"><i class="fas fa-cogs"></i> Engine:</label>
+                <select id="engine" name="Engine" onchange="loadFuelTypes()" required>
+                    <option value="">Select Engine</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fuel"><i class="fas fa-gas-pump"></i> Fuel Type:</label>
+                <select id="fuel" name="Fuel" onchange="loadHPs()" required>
+                    <option value="">Select Fuel Type</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hp"><i class="fas fa-tachometer-alt"></i> Horsepower (HP):</label>
+                <select id="hp" name="HP" required>
+                    <option value="">Select HP</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="button" class="btn" onclick="fetchCarDetails()">
+                    Fetch Car Details
+                </button>
+            </div>
+
+            <div class="form-group" id="carDetails">
+                <h4>Car Details:</h4>
+                <p id="detailsContent">No car selected.</p>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn">Save Car</button>
+            </div>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2025 Gas Calculation. All Rights Reserved.</p>
+    </footer>
+
+
+
+
+
+    <script>
+        // Fetch Car Details button
+        function fetchCarDetails() {
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const generation = document.getElementById('generation').value;
+            const year = document.getElementById('year').value;
+            const engine = document.getElementById('engine').value;
+            const fuel = document.getElementById('fuel').value;
+            const hp = document.getElementById('hp').value;
+
+
+            if (!brand || !model || !generation || !year || !engine || !fuel || !hp) {
+            document.getElementById('detailsContent').textContent = "Please select all fields.";
+            return;
+        }
+
+
+            fetch(`/Car/GetCarDetails?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}&hp=${encodeURIComponent(hp)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('detailsContent').textContent = data.message;
+                } else {
+                    document.getElementById('detailsContent').innerHTML = `
+                        <strong>Brand:</strong> ${data.brand}<br>
+                        <strong>Model:</strong> ${data.model}<br>
+                        <strong>Generation:</strong> ${data.generation}<br>
+                        <strong>Year:</strong> ${data.year}<br>
+                        <strong>Engine:</strong> ${data.engine}<br>
+                        <strong>Fuel:</strong> ${data.fuel}<br>
+                        <strong>Horsepower (HP):</strong> ${data.hp}<br>
+                        <strong>City Consumption:</strong> ${data.cityConsumption} L/100km<br>
+                        <strong>Outside Consumption:</strong> ${data.outsideConsumption} L/100km
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching car details:", error);
+                document.getElementById('detailsContent').textContent = "An error occurred while fetching car details.";
+            });
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+// Marka seçildiğinde modelleri yükle
+    function loadModels() {
+        const brand = document.getElementById('brand').value;
+        const modelSelect = document.getElementById('model');
+        modelSelect.innerHTML = '<option value="">Select Model</option>';
+
+        fetch(`/Car/GetModels?brand=${encodeURIComponent(brand)}`)
+            .then(response => response.json())
+            .then(models => {
+                if (models.length === 1 && models[0] === "No models available") {
+                    modelSelect.innerHTML = '<option value="">No models available</option>';
+                } else {
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        modelSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error("Error loading models:", error));
+    }
+
+    // Model seçildiğinde nesilleri yükle
+    function loadGenerations() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const generationSelect = document.getElementById('generation');
+        generationSelect.innerHTML = '<option value="">Select Generation</option>';
+
+        fetch(`/Car/GetGenerations?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`)
+            .then(response => response.json())
+            .then(generations => {
+                if (generations.length === 1 && generations[0] === "No generations available") {
+                    generationSelect.innerHTML = '<option value="">No generations available</option>';
+                } else {
+                    generations.forEach(generation => {
+                        const option = document.createElement('option');
+                        option.value = generation;
+                        option.textContent = generation;
+                        generationSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error("Error loading generations:", error));
+    }
+
+    // Nesil seçildiğinde yılları yükle
+    function loadYears() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const generation = document.getElementById('generation').value;
+        const yearSelect = document.getElementById('year');
+        yearSelect.innerHTML = '<option value="">Select Year</option>';
+
+        fetch(`/Car/GetYears?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}`)
+            .then(response => response.json())
+            .then(years => {
+                if (years.length === 1 && years[0] === "No years available") {
+                    yearSelect.innerHTML = '<option value="">No years available</option>';
+                } else {
+                    years.forEach(year => {
+                        const option = document.createElement('option');
+                        option.value = year;
+                        option.textContent = year;
+                        yearSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error("Error loading years:", error));
+    }
+
+    // Yıl seçildiğinde motorları yükle
+    function loadEngines() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const generation = document.getElementById('generation').value;
+        const year = document.getElementById('year').value;
+        const engineSelect = document.getElementById('engine');
+        engineSelect.innerHTML = '<option value="">Select Engine</option>';
+
+        fetch(`/Car/GetEngines?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}`)
+            .then(response => response.json())
+            .then(engines => {
+                if (engines.length === 1 && engines[0] === "No engines available") {
+                    engineSelect.innerHTML = '<option value="">No engines available</option>';
+                } else {
+                    engines.forEach(engine => {
+                        const option = document.createElement('option');
+                        option.value = engine;
+                        option.textContent = engine;
+                        engineSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error("Error loading engines:", error));
+    }
+
+    // Motor seçildiğinde yakıt türlerini yükle
+    function loadFuelTypes() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const generation = document.getElementById('generation').value;
+        const year = document.getElementById('year').value;
+        const engine = document.getElementById('engine').value;
+        const fuelSelect = document.getElementById('fuel');
+        fuelSelect.innerHTML = '<option value="">Select Fuel Type</option>';
+
+        fetch(`/Car/GetFuelTypes?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}`)
+            .then(response => response.json())
+            .then(fuels => {
+                if (fuels.length === 1 && fuels[0] === "No fuel types available") {
+                    fuelSelect.innerHTML = '<option value="">No fuel types available</option>';
+                } else {
+                    fuels.forEach(fuel => {
+                        const option = document.createElement('option');
+                        option.value = fuel;
+                        option.textContent = fuel;
+                        fuelSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error("Error loading fuel types:", error));
+    }
+
+    // HP (Horsepower) yükle
+    function loadHPs() {
+        const brand = document.getElementById('brand').value;
+        const model = document.getElementById('model').value;
+        const generation = document.getElementById('generation').value;
+        const year = document.getElementById('year').value;
+        const engine = document.getElementById('engine').value;
+        const fuel = document.getElementById('fuel').value;
+        const hpSelect = document.getElementById('hp');
+        hpSelect.innerHTML = '<option value="">Select HP</option>';
+
+        fetch(`/Car/GetHPs?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}`)
+            .then(response => response.json())
+            .then(hpValues => {
+                if (hpValues.length === 1 && hpValues[0] === "No HP available") {
+                    hpSelect.innerHTML = '<option value="">No HP available</option>';
+                } else {
+                    hpValues.forEach(hp => {
+                        const option = document.createElement('option');
+                        option.value = hp;
+                        option.textContent = hp;
+                        hpSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => console.error("Error loading HPs:", error));
+    }
+</script>

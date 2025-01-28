@@ -63,6 +63,27 @@ header {
     position: relative;
 }
 
+.hero-save-car {
+    background-image: none; /* Arka plan resmini kaldýr */
+    background-color: #21a19d; /* Ýsteðe baðlý: baþka bir renk ekleyebilirsiniz */
+    height: auto; /* Yüksekliði içeriðe göre ayarlayýn */
+    padding: 40px 0; /* Ýç boþluk ekleyin */
+    background-size: cover;
+    background-position: center;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    text-align: center;
+    position: relative;
+}
+
+.hero-save-car-content {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
 .hero-content h2 {
     font-size: 4rem;
     margin-bottom: 20px;

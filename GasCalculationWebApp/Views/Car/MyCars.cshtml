@@ -1,0 +1,79 @@
+﻿
+
+<nav>
+    <ul>
+        <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+        <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li>Welcome, @User.Identity.Name!</li>
+
+
+            <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
+            <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+            <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
+
+
+
+        }
+        else
+        {
+            <li><a href="@Url.Action("Login", "Account")">Login</a></li>
+            <li><a href="@Url.Action("Register", "Account")">Register</a></li>
+        }
+
+    </ul>
+</nav>
+
+
+
+
+
+
+@model IEnumerable<GasCalculationWebApp.Model.CarData2>
+
+
+
+
+
+
+
+
+<h2>My Cars</h2>
+
+@if (!Model.Any())
+{
+    <p>You have not saved any cars yet.</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Generation</th>
+                <th>Year</th>
+                <th>Engine</th>
+                <th>Fuel</th>
+                <th>HP</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in Model)
+            {
+                <tr>
+                    <td>@car.Brand</td>
+                    <td>@car.Model</td>
+                    <td>@car.Generation</td>
+                    <td>@car.Year</td>
+                    <td>@car.Engine</td>
+                    <td>@car.Fuel</td>
+                    <td>@car.HP</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -22,8 +22,42 @@
         <ul>
             <li><a href="@Url.Action("Index", "Home")">Home</a></li>
             <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li>Welcome, @User.Identity.Name!</li>
+
+
+                <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
+                <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
+
+
+                
+            }
+            else
+            {
+                <li><a href="@Url.Action("Login", "Account")">Login</a></li>
+                <li><a href="@Url.Action("Register", "Account")">Register</a></li>
+            }
+
+
         </ul>
     </nav>
+
+
+    
+
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Message"]
+        </div>
+    }
+
+
+
 
     <section class="hero">
         <div class="hero-content">
@@ -128,39 +162,6 @@
     </script>
     
 
-
-    
-
-       
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-    
-    
 
     <footer>
         <p>© 2025 Gas Calculation. All Rights Reserved.</p>

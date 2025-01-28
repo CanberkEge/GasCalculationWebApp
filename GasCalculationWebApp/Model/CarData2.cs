@@ -14,6 +14,8 @@
         public decimal OutsideConsumption { get; set; }
 
 
+        public ICollection<UserCar> UserCars { get; set; } // Ara tablodan ilişki
+
         /*
         public int UserId { get; set; }
         public User User { get; set; }

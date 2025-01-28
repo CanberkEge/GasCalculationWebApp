@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore; // DbContext için gerekli
 using GasCalculationWebApp.Data;     // ApplicationDbContext'e eriþim için gerekli
-
+using Microsoft.AspNetCore.Authentication.Cookies; // Cookie tabanlý kimlik doðrulama için gerekli
 
 
 
@@ -14,6 +14,20 @@ builder.Services.AddControllersWithViews();  // MVC'yi ekleyin
 // Veritabaný baðlantýsý (ConnectionString'i appsettings.json'dan alýyor)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+// Kullanýcý kimlik doðrulama ayarlarý (Cookie tabanlý kimlik doðrulama)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login"; // Giriþ yapmayan kullanýcýyý yönlendirme
+        options.AccessDeniedPath = "/Account/AccessDenied"; // Yetkisiz eriþim için yönlendirme
+    });
+
+
+
+
+
 
 var app = builder.Build();
 
@@ -29,7 +43,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+// Kimlik doðrulama ve yetkilendirme iþlemleri
+
+app.UseAuthentication(); // Kullanýcý oturum açma iþlemleri için gerekli
+app.UseAuthorization(); // Yetki kontrolü
 
 // MVC yapýlandýrmasý
 app.MapControllerRoute(

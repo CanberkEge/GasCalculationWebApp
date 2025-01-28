@@ -1,0 +1,22 @@
+﻿<h2>Register</h2>
+
+<form asp-action="Register" method="post">
+
+    <label for="Name">Name</label>
+    <input type="text" id="Name" name="Name" required />
+
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="Email" required />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="PasswordHash" required />
+
+    <button type="submit">Register</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+

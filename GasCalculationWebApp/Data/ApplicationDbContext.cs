@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GasCalculationWebApp.Model;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GasCalculationWebApp.Data
 {
@@ -11,7 +12,8 @@ namespace GasCalculationWebApp.Data
        // public DbSet<CarDatas> CarDatas { get; set; }
 
         public DbSet<CarData2> CarDatas2 { get; set; }
-        
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserCar> UserCars { get; set; }
         // Kullanıcı tablosu
         // public DbSet<User> Users { get; set; }
 
@@ -34,6 +36,23 @@ namespace GasCalculationWebApp.Data
             modelBuilder.Entity<CarData2>()
                 .Property(c => c.OutsideConsumption)
                 .HasColumnType("decimal(5,2)"); // Veritabanı türü olarak decimal(5,2)
+
+
+            // Ara tablonun primary key tanımı
+            modelBuilder.Entity<UserCar>()
+            .HasKey(uc => new { uc.UserId, uc.CarId });
+
+            // Users ile ilişki
+            modelBuilder.Entity<UserCar>()
+                .HasOne(uc => uc.User)
+                .WithMany(u => u.UserCars)
+                .HasForeignKey(uc => uc.UserId);
+
+            // CarData ile ilişki
+            modelBuilder.Entity<UserCar>()
+                .HasOne(uc => uc.Car)
+                .WithMany(c => c.UserCars)
+                .HasForeignKey(uc => uc.CarId);
         }
     }
 }
