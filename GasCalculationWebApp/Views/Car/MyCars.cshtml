@@ -1,79 +1,100 @@
-﻿
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cars - Gas Calculation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="~/Pictures/GasStation.ico" />
+</head>
+<body>
 
-<nav>
-    <ul>
-        <li><a href="@Url.Action("Index", "Home")">Home</a></li>
-        <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+    <header>
+        <div class="logo">
+            <h1>Gas Calculation</h1>
+        </div>
+    </header>
 
-
-        @if (User.Identity.IsAuthenticated)
-        {
-            <li>Welcome, @User.Identity.Name!</li>
-
-
-            <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
-            <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
-            <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
-
-
-
-        }
-        else
-        {
-            <li><a href="@Url.Action("Login", "Account")">Login</a></li>
-            <li><a href="@Url.Action("Register", "Account")">Register</a></li>
-        }
-
-    </ul>
-</nav>
-
-
-
-
-
-
-@model IEnumerable<GasCalculationWebApp.Model.CarData2>
-
-
-
-
-
-
-
-
-<h2>My Cars</h2>
-
-@if (!Model.Any())
-{
-    <p>You have not saved any cars yet.</p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Brand</th>
-                <th>Model</th>
-                <th>Generation</th>
-                <th>Year</th>
-                <th>Engine</th>
-                <th>Fuel</th>
-                <th>HP</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var car in Model)
+    <nav>
+        <ul>
+            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+            @if (User.Identity.IsAuthenticated)
             {
-                <tr>
-                    <td>@car.Brand</td>
-                    <td>@car.Model</td>
-                    <td>@car.Generation</td>
-                    <td>@car.Year</td>
-                    <td>@car.Engine</td>
-                    <td>@car.Fuel</td>
-                    <td>@car.HP</td>
-                </tr>
+                <li>Welcome, @User.Identity.Name!</li>
+                <li><a href="@Url.Action("MyCars", "Car")" class="active">My Cars</a></li>
+                <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
             }
-        </tbody>
-    </table>
-}
+            else
+            {
+                <li><a href="@Url.Action("Login", "Account")">Login</a></li>
+                <li><a href="@Url.Action("Register", "Account")">Register</a></li>
+            }
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero hero-save-car">
+            <div class="hero-save-car-content">
+                <h2>My Cars</h2>
+                <p>View and manage your saved vehicles.</p>
+            </div>
+        </section>
+
+        <div class="container mt-4">
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-info text-center">
+                    @ViewBag.Message
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Brand</th>
+                                <th>Model</th>
+                                <th>Generation</th>
+                                <th>Year</th>
+                                <th>Engine</th>
+                                <th>Fuel Type</th>
+                                <th>Horsepower</th>
+                                <th>City Consumption</th>
+                                <th>Outside Consumption</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var car in Model)
+                            {
+                                <tr>
+                                    <td>@car.Brand</td>
+                                    <td>@car.Model</td>
+                                    <td>@car.Generation</td>
+                                    <td>@car.Year</td>
+                                    <td>@car.Engine</td>
+                                    <td>@car.Fuel</td>
+                                    <td>@car.HP</td>
+                                    <td>@car.CityConsumption L/100km</td>
+                                    <td>@car.OutsideConsumption L/100km</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 Gas Calculation. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

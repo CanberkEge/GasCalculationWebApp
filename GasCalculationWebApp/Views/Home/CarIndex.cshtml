@@ -31,6 +31,7 @@
 
                 <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
                 <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li> <!-- Profil linki eklendi -->
                 <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
 
 
@@ -70,116 +71,111 @@
 
 
     <!-- Araç Seçimi Formu -->
-    <section class="form-section">
-        <h3>Calculate Fuel Costs (Car Selection)</h3>
-        <form method="post" action="/Home/CalculateByCar" class="form">
-            <div class="form-group">
-                <label for="brand">Brand:</label>
-                <select id="brand" name="brand" onchange="loadModels()" required>
-                    <option value="">Select Brand</option>
-                    @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
-                    {
-                        foreach (var brand in ViewBag.Brands as List<string>)
+    <section class="form-section-2">
+        <div class="form-container">
+            <!-- Sol taraf: Seçim ekranı -->
+            <div class="form-left">
+                <h3>Calculate Fuel Costs (Car Selection)</h3>
+                <form method="post" action="/Home/CalculateByCar" class="form">
+                    <div class="form-group">
+                        <label for="brand">Brand:</label>
+                        <select id="brand" name="brand" onchange="loadModels()" required>
+                            <option value="">Select Brand</option>
+                            @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
+                            {
+                                foreach (var brand in ViewBag.Brands as List<string>)
+                                {
+                                    <option value="@brand">@brand</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">No brands available</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="model">Model:</label>
+                        <select id="model" name="model" onchange="loadGenerations()" required>
+                            <option value="">Select Model</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="generation">Generation:</label>
+                        <select id="generation" name="generation" onchange="loadYears()" required>
+                            <option value="">Select Generation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year:</label>
+                        <select id="year" name="year" onchange="loadEngines()" required>
+                            <option value="">Select Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="engine">Engine:</label>
+                        <select id="engine" name="engine" onchange="loadFuelTypes()" required>
+                            <option value="">Select Engine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fuel">Fuel:</label>
+                        <select id="fuel" name="fuel" onchange="loadHPs()" required>
+                            <option value="">Select Fuel Type</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hp">Horsepower (HP):</label>
+                        <select id="hp" name="hp" required>
+                            <option value="">Select HP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="distanceCar">Distance (km):</label>
+                        <input type="text" id="distanceCar" name="distance" required />
+                    </div>
+                    <button type="submit" class="btn">Calculate</button>
+                </form>
+            </div>
+
+
+            <script>
+                // Giriş alanını seçiyoruz
+                const distanceInputCar = document.getElementById('distanceCar');
+
+                // Kullanıcı girişini dinleyip formatlıyoruz
+                distanceInputCar.addEventListener('input', (e) => {
+                    // Giriş değerini al ve tüm noktaları kaldır
+                    let value = e.target.value.replace(/\./g, '');
+
+                    // Eğer sadece sayı değilse giriş yapma
+                    if (!/^\d*$/.test(value)) {
+                        return;
+                    }
+
+                    // Sayıyı 3'lü gruplar halinde noktalı formatla
+                    e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                });
+            </script>
+
+
+
+            <!-- Sağ taraf: Sonuç ekranı -->
+            <div class="form-right">
+                <div class="car-details">
+                    <h3>Results</h3>
+                    <div id="car-result">
+                        @if (ViewBag.CarResult != null)
                         {
-                            <option value="@brand">@brand</option>
+                            <p>@Html.Raw(ViewBag.CarResult)</p>
                         }
-                    }
-                    else
-                    {
-                        <option value="">No brands available</option>
-                    }
-                </select>
+                        else
+                        {
+                            <p style="color: red;">Select a car to see the fuel consumption.</p>
+                        }
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="model">Model:</label>
-                <select id="model" name="model" onchange="loadGenerations()" required>
-                    <option value="">Select Model</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="generation">Generation:</label>
-                <select id="generation" name="generation" onchange="loadYears()" required>
-                    <option value="">Select Generation</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="year">Year:</label>
-                <select id="year" name="year" onchange="loadEngines()" required>
-                    <option value="">Select Year</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="engine">Engine:</label>
-                <select id="engine" name="engine" onchange="loadFuelTypes()" required>
-                    <option value="">Select Engine</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="fuel">Fuel:</label>
-                <select id="fuel" name="fuel" onchange="loadHPs()" required>
-                    <option value="">Select Fuel Type</option>
-                </select>
-            </div>
-
-
-            <div class="form-group">
-                <label for="hp">Horsepower (HP):</label>
-                <select id="hp" name="hp" required>
-                    <option value="">Select HP</option>
-                    <!-- Backend'den gelen HP değerlerini doldur -->
-                </select>
-            </div>
-
-
-
-
-
-
-            <div id="city-consumption-container">
-                <span id="city-consumption">City Consumption: Not available</span>
-            </div>
-
-            <div class="form-group">
-                <label for="distanceCar">Distance (km):</label>
-                <input type="text" id="distanceCar" name="distance" required />
-            </div>
-            <button type="submit" class="btn">Calculate</button>
-        </form>
-    </section>
-
-
-    <script>
-        // Giriş alanını seçiyoruz
-        const distanceInputCar = document.getElementById('distanceCar');
-
-        // Kullanıcı girişini dinleyip formatlıyoruz
-        distanceInputCar.addEventListener('input', (e) => {
-            // Giriş değerini al ve tüm noktaları kaldır
-            let value = e.target.value.replace(/\./g, '');
-
-            // Eğer sadece sayı değilse giriş yapma
-            if (!/^\d*$/.test(value)) {
-                return;
-            }
-
-            // Sayıyı 3'lü gruplar halinde noktalı formatla
-            e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        });
-    </script>
-
-
-
-    <section class="result-section">
-        <h2>Results</h2>
-        <div id="car-result">
-            @if (ViewBag.CarResult != null)
-            {
-                <p>@Html.Raw(ViewBag.CarResult)</p>
-            }
-            else
-            {
-                <p style="color: red;">Select a car to see the fuel consumption.</p>
-            }
         </div>
     </section>
 

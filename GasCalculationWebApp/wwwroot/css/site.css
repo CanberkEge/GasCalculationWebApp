@@ -1,27 +1,3 @@
-/*html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-    */
-
 * {
     margin: 0;
     padding: 0;
@@ -29,17 +5,27 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+html, body {
+    height: 100%; /* Tam ekran yüksekliðini kapsar */
+    display: flex;
+    flex-direction: column; /* Üstten aþaðýya sýralama */
+}
+
 body {
     margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
+    padding-top: 60px; /* Nav yüksekliði kadar boþluk */
     background-color: #f5f5f7;
     color: #333;
+    font-family: 'Roboto', sans-serif;
     line-height: 1.6;
-    padding-top: 60px; /* Navigasyon yüksekliði kadar boþluk */
+}
+
+main {
+    flex: 1; /* Ýçerik alaný esnek olur ve kalan alaný kaplar */
 }
 
 header {
+    margin-top: 0; /* Header için ekstra bir boþluk eklememize gerek kalmaz */
     background-color: #333;
     padding: 20px 0;
     text-align: center;
@@ -54,7 +40,7 @@ header {
     background-image: url('../Pictures/porsche911_benzin.jpg');
     background-size: cover;
     background-position: center;
-    height: 107vh;
+    min-height: 100vh; /* Ekran yüksekliðine göre ayarlanýr */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -67,9 +53,8 @@ header {
     background-image: none; /* Arka plan resmini kaldýr */
     background-color: #21a19d; /* Ýsteðe baðlý: baþka bir renk ekleyebilirsiniz */
     height: auto; /* Yüksekliði içeriðe göre ayarlayýn */
-    padding: 40px 0; /* Ýç boþluk ekleyin */
-    background-size: cover;
-    background-position: center;
+    min-height: 20vh; /* Daha küçük bir yükseklik */
+    padding: 20px 0; /* Ýç boþluk ekleyin */
     
     display: flex;
     justify-content: center;
@@ -80,7 +65,7 @@ header {
 }
 
 .hero-save-car-content {
-    font-size: 4rem;
+    font-size: 1.8rem;
     margin-bottom: 20px;
 }
 
@@ -152,7 +137,9 @@ footer {
     color: #fff;
     padding: 20px;
     text-align: center;
+    margin-top: auto; /* Footer'ý en alta itmek için */
 }
+
 select {
     padding: 10px;
     font-size: 1rem;
@@ -177,6 +164,7 @@ nav {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hafif gölge */
     z-index: 1000; /* Diðer içeriklerin önünde */
     padding: 11px 0;
+    margin-bottom: 20px; /* Nav ile diðer içerikler arasýnda boþluk býrakýr */
 }
 
     nav ul {
@@ -190,6 +178,7 @@ nav {
 
         nav ul li {
             display: inline;
+            color: #fff;
         }
 
             nav ul li a {
@@ -207,3 +196,82 @@ nav {
                     color: #ddd; /* Hover için yazý rengi */
                 }
 
+.form-section-2 {
+    padding: 40px 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.form-container {
+    display: flex;
+    gap: 30px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.form-left {
+    flex: 1;
+    max-width: 45%;
+    text-align: left;
+}
+
+.form-right {
+    flex: 1;
+    max-width: 45%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.car-details {
+    text-align: left;
+}
+
+    .car-details h3 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .car-details p {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+
+.table {
+    width: 100%;
+    border-collapse: separate; /* Hücreler arasýnda boþluk býrak */
+    border-spacing: 0 10px; /* Satýrlar arasýnda dikey boþluk */
+    margin-top: 20px; /* Tablonun üstünde boþluk */
+}
+
+    .table th,
+    .table td {
+        padding: 15px; /* Hücre içi boþluk */
+        vertical-align: middle; /* Ýçerikleri dikey olarak ortala */
+    }
+
+    .table th {
+        background-color: #333; /* Baþlýk arka plan rengi */
+        color: #fff; /* Baþlýk yazý rengi */
+        font-size: 1rem; /* Baþlýk yazý boyutu */
+        text-transform: uppercase; /* Baþlýk harflerini büyük yap */
+        border-bottom: 2px solid #555; /* Baþlýk altýna çizgi */
+    }
+
+    .table td {
+        background-color: #f9f9f9; /* Hücre arka plan rengi */
+        font-size: 0.9rem; /* Hücre yazý boyutu */
+        border: 1px solid #ddd; /* Hücre kenar çizgisi */
+    }
+
+.table-hover tbody tr:hover td {
+    background-color: #e9ecef; /* Satýr üzerine gelince arka plan rengi */
+}
+
+.text-center {
+    text-align: center; /* Hücreleri yatayda ortala */
+}

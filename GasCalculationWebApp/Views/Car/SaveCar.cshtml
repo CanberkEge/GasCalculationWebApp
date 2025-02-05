@@ -33,6 +33,7 @@
                 <li>Welcome, @User.Identity.Name!</li>
                 <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
                 <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
             }
             else
@@ -51,78 +52,106 @@
     </section>
 
     <!-- Save Car Form -->
-    <section class="form-section">
-        <h3>Save a Car to My Cars</h3>
-        <form method="post" action="/Car/SaveCar" class="form">
-            <div class="form-group">
-                <label for="brand"><i class="fas fa-industry"></i> Brand:</label>
-                <select id="brand" name="Brand" onchange="loadModels()" required>
-                    <option value="">Select Brand</option>
-                    @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
-                    {
-                        foreach (var brand in ViewBag.Brands as List<string>)
-                        {
-                            <option value="@brand">@brand</option>
-                        }
-                    }
-                    else
-                    {
-                        <option value="">No brands available</option>
-                    }
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="model"><i class="fas fa-car"></i> Model:</label>
-                <select id="model" name="Model" onchange="loadGenerations()" required>
-                    <option value="">Select Model</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="generation"><i class="fas fa-layer-group"></i> Generation:</label>
-                <select id="generation" name="Generation" onchange="loadYears()" required>
-                    <option value="">Select Generation</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="year"><i class="fas fa-calendar-alt"></i> Year:</label>
-                <select id="year" name="Year" onchange="loadEngines()" required>
-                    <option value="">Select Year</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="engine"><i class="fas fa-cogs"></i> Engine:</label>
-                <select id="engine" name="Engine" onchange="loadFuelTypes()" required>
-                    <option value="">Select Engine</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="fuel"><i class="fas fa-gas-pump"></i> Fuel Type:</label>
-                <select id="fuel" name="Fuel" onchange="loadHPs()" required>
-                    <option value="">Select Fuel Type</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="hp"><i class="fas fa-tachometer-alt"></i> Horsepower (HP):</label>
-                <select id="hp" name="HP" required>
-                    <option value="">Select HP</option>
-                </select>
+    <section class="form-section-2">
+        <div class="form-container">
+            <!-- Sol Taraf: Form -->
+            <div class="form-left">
+                <h3>Save a Car to My Cars</h3>
+
+                
+                <form method="post" action="/Car/SaveCar" class="form">
+                    <input type="hidden" name="carId" id="carId" value="" />
+                    <div class="form-group">
+                        <label for="brand"><i class="fas fa-industry"></i> Brand:</label>
+                        <select id="brand" name="Brand" onchange="loadModels()" required>
+                            <option value="">Select Brand</option>
+                            @if (ViewBag.Brands != null && ViewBag.Brands is List<string>)
+                            {
+                                foreach (var brand in ViewBag.Brands as List<string>)
+                                {
+                                    <option value="@brand">@brand</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">No brands available</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="model"><i class="fas fa-car"></i> Model:</label>
+                        <select id="model" name="Model" onchange="loadGenerations()" required>
+                            <option value="">Select Model</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="generation"><i class="fas fa-layer-group"></i> Generation:</label>
+                        <select id="generation" name="Generation" onchange="loadYears()" required>
+                            <option value="">Select Generation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year"><i class="fas fa-calendar-alt"></i> Year:</label>
+                        <select id="year" name="Year" onchange="loadEngines()" required>
+                            <option value="">Select Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="engine"><i class="fas fa-cogs"></i> Engine:</label>
+                        <select id="engine" name="Engine" onchange="loadFuelTypes()" required>
+                            <option value="">Select Engine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fuel"><i class="fas fa-gas-pump"></i> Fuel Type:</label>
+                        <select id="fuel" name="Fuel" onchange="loadHPs()" required>
+                            <option value="">Select Fuel Type</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hp"><i class="fas fa-tachometer-alt"></i> Horsepower (HP):</label>
+                        <select id="hp" name="HP" required>
+                            <option value="">Select HP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn" onclick="fetchCarDetails()">
+                            Fetch Car Details
+                        </button>
+                    </div>
+
+                    <!-- Araç bilgilerini form ile birlikte göndermek için hidden inputlar -->
+                    <input type="hidden" name="CityConsumption" id="hiddenCityConsumption">
+                    <input type="hidden" name="OutsideConsumption" id="hiddenOutsideConsumption">
+
+
+
+
+
+                    <div class="form-group">
+                        <button type="submit" class="btn">Save Car</button>
+                    </div>
+                </form>
             </div>
 
-            <div class="form-group">
-                <button type="button" class="btn" onclick="fetchCarDetails()">
-                    Fetch Car Details
-                </button>
-            </div>
 
-            <div class="form-group" id="carDetails">
-                <h4>Car Details:</h4>
-                <p id="detailsContent">No car selected.</p>
-            </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn">Save Car</button>
+            
+
+
+
+
+
+            <!-- Sağ Taraf: Car Details -->
+            <div class="form-right">
+                <div class="car-details">
+                    <h3>Car Details</h3>
+                    <div id="carDetails">
+                        <p id="detailsContent">No car selected.</p>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
     </section>
 
     <footer>
@@ -154,10 +183,17 @@
             fetch(`/Car/GetCarDetails?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}&engine=${encodeURIComponent(engine)}&fuel=${encodeURIComponent(fuel)}&hp=${encodeURIComponent(hp)}`)
             .then(response => response.json())
             .then(data => {
+                console.log("Fetched Car Details:", data); // **Konsola veriyi yazdır*
                 if (data.message) {
                     document.getElementById('detailsContent').textContent = data.message;
                 } else {
+                    document.getElementById('carId').value = data.id; // carId'yi atıyoruz
+                    document.getElementById('hiddenCityConsumption').value = data.cityConsumption;
+                    document.getElementById('hiddenOutsideConsumption').value = data.outsideConsumption;
+
+
                     document.getElementById('detailsContent').innerHTML = `
+                        <strong>Car ID:</strong> ${data.id}<br>
                         <strong>Brand:</strong> ${data.brand}<br>
                         <strong>Model:</strong> ${data.model}<br>
                         <strong>Generation:</strong> ${data.generation}<br>

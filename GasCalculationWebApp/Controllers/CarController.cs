@@ -30,65 +30,80 @@ namespace GasCalculationWebApp.Controllers
 
 
 
-
         [Authorize]
         [HttpPost]
-        public IActionResult SaveCar(CarData2 carData)
+        public IActionResult SaveCar(int carId)
+
         {
-            if (!ModelState.IsValid)
+            Console.WriteLine($"SaveCar metodu çağrıldı! Gelen carId: {carId}");
+            if (carId <= 0)
             {
-                ViewBag.Error = "Please fill in all required fields.";
-                return View(carData);
-            }
-
-            // Kullanıcı oturumdan ID alınıyor
-            int userId = GetLoggedInUserId();
-
-            // Kullanıcının seçtiği araç veritabanında var mı kontrol et
-            var existingCar = _context.CarDatas2.FirstOrDefault(c =>
-                c.Brand == carData.Brand &&
-                c.Model == carData.Model &&
-                c.Generation == carData.Generation &&
-                c.Year == carData.Year &&
-                c.Engine == carData.Engine &&
-                c.Fuel == carData.Fuel &&
-                c.HP == carData.HP);
-
-            if (existingCar == null)
-            {
-                _context.CarDatas2.Add(carData);
-                _context.SaveChanges();
-                existingCar = carData;
-
-
-
-                _context.CarDatas2.Add(existingCar);
-                _context.SaveChanges(); // Yeni aracı kaydet
-            }
-
-            // Kullanıcının bu aracı daha önce kaydedip kaydetmediğini kontrol et
-            // Kullanıcının daha önce kaydedip kaydetmediğini kontrol et
-            if (_context.UserCars.Any(uc => uc.UserId == userId && uc.CarId == existingCar.Id))
-            {
-                ViewBag.Error = "You already saved this car.";
+                Console.WriteLine("HATA: carId 0 veya geçersiz!"); //yeni eklendi 5.02.2025
+                TempData["Error"] = "Invalid car selection!";
                 return RedirectToAction("MyCars");
             }
 
-            // Kullanıcı ve araba ilişkisi kaydı
-            _context.UserCars.Add(new UserCar
+            // Kullanıcı ID al
+            int userId = GetLoggedInUserId();
+            Console.WriteLine($"Oturum Açan Kullanıcı ID: {userId}");
+            if (userId == 0) throw new Exception("Error: User ID is invalid!");
+
+            // Seçilen araba var mı kontrol et
+            var existingCar = _context.CarDatas2.Find(carId);
+            Console.WriteLine($"Seçilen Araba ID: {carId}, Var mı?: {existingCar != null}");
+            if (existingCar == null)
+            {
+                TempData["Error"] = "Car not found!";
+                return RedirectToAction("MyCars");
+            }
+
+            // Kullanıcının daha önce ekleyip eklemediğini kontrol et
+            bool isAlreadySaved = _context.UserCars.Any(uc => uc.UserId == userId && uc.CarId == carId);
+            Console.WriteLine($"isAlreadySaved: {isAlreadySaved}");
+            if (isAlreadySaved)
+            {
+                TempData["Error"] = "You already saved this car.";
+                return RedirectToAction("MyCars");
+            }
+
+            // Kullanıcı ve araba ilişkisini kaydet
+            var userCar = new UserCar
             {
                 UserId = userId,
-                CarId = existingCar.Id,
+                CarId = carId,
                 IsOwner = true
-            });
+            };
 
-            
+            Console.WriteLine($"UserCar Eklenecek: UserId={userCar.UserId}, CarId={userCar.CarId}");
 
-            
-            _context.SaveChanges();
+            try
+            {
+                _context.UserCars.Add(userCar);
+                int affectedRows = _context.SaveChanges();
+                Console.WriteLine($"UserCar başarıyla kaydedildi. Affected Rows: {affectedRows}");
+
+                if (affectedRows > 0)
+                {
+                    TempData["Success"] = "Araç başarıyla kaydedildi!";
+                }
+                else
+                {
+                    TempData["Error"] = "Araç kaydedilirken bir hata oluştu!";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"HATA: UserCar kaydedilemedi! {ex.ToString()}");
+                TempData["Error"] = "Beklenmeyen bir hata oluştu, lütfen tekrar deneyin.";
+            }
 
             return RedirectToAction("MyCars");
         }
+
+
+
+
+
 
 
 
@@ -100,17 +115,32 @@ namespace GasCalculationWebApp.Controllers
 
             var cars = _context.UserCars
                 .Where(uc => uc.UserId == userId)
+                .Include(uc => uc.Car) // Car verilerini doğrudan yükler, 29.01.2025
                 .Select(uc => uc.Car)
                 .ToList();
+
+
+            if (!cars.Any())
+            {
+                ViewBag.Message = "You have not saved any cars.";
+            }
 
             return View(cars);
         }
 
+        /*
         private int GetLoggedInUserId()
         {
             return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Kullanıcının ID'si
         }
+        */
 
+        // 29.01.2025
+        private int GetLoggedInUserId()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return userId != null ? int.Parse(userId) : 0;
+        }
 
 
         #region Dropdown Data Endpoints
@@ -241,6 +271,7 @@ namespace GasCalculationWebApp.Controllers
                 .Where(c => c.Brand == brand && c.Model == model && c.Generation == generation && c.Year == year && c.Engine == engine && c.Fuel == fuel && c.HP == hp)
                 .Select(c => new
                 {
+                    c.Id,
                     c.Brand,
                     c.Model,
                     c.Generation,

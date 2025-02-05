@@ -1,22 +1,86 @@
-﻿<h2>Register</h2>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="icon" type="image/x-icon" href="~/Pictures/GasStation.ico">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><i class="fas fa-user-plus"></i> Register</h1>
+        </div>
+    </header>
 
-<form asp-action="Register" method="post">
+    <nav>
+        <ul>
+            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li>Welcome, @User.Identity.Name!</li>
+                <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
+                <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
+            }
+            else
+            {
+                <li><a href="@Url.Action("Login", "Account")">Login</a></li>
+                <li><a href="@Url.Action("Register", "Account")">Register</a></li>
+            }
+        </ul>
+    </nav>
 
-    <label for="Name">Name</label>
-    <input type="text" id="Name" name="Name" required />
+    <main>
+        <section class="form-section">
+            <div class="form-container">
+                <div class="form-left">
+                    <h2><i class="fas fa-user-plus"></i> Create Your Account</h2>
+                    <p>Sign up to save your cars and calculate fuel costs efficiently.</p>
+                    <p class="text-muted text-center">
+                        After registration, you will receive a confirmation email. Please verify your email to activate your account.
+                    </p>
+                </div>
+                <div class="form-right">
+                    <form asp-action="Register" method="post" class="form">
+                        <div class="form-group">
+                            <label for="Name"><i class="fas fa-user"></i> Name:</label>
+                            <input type="text" id="Name" name="Name" class="form-control" placeholder="Enter your full name" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email"><i class="fas fa-envelope"></i> Email:</label>
+                            <input type="email" id="email" name="Email" class="form-control" placeholder="e.g., example@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="password"><i class="fas fa-lock"></i> Password:</label>
+                            <input type="password" id="password" name="PasswordHash" class="form-control" placeholder="Enter your password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-user-plus"></i> Register</button>
+                    </form>
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle"></i> @TempData["Success"]
+                        </div>
+                    }
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger mt-3">
+                            <i class="fas fa-exclamation-circle"></i> @ViewBag.Error
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
 
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="Email" required />
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="PasswordHash" required />
-
-    <button type="submit">Register</button>
-</form>
-
-@if (ViewBag.Error != null)
-{
-    <p style="color:red">@ViewBag.Error</p>
-}
+    <footer>
+        <p>© 2025 Gas Calculation. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
 
