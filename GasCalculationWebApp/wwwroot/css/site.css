@@ -275,3 +275,22 @@ nav {
 .text-center {
     text-align: center; /* Hücreleri yatayda ortala */
 }
+
+
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .password-container input {
+        flex: 1;
+        padding-right: 35px; /* Ýkon için sað taraf boþluk býrak */
+    }
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: gray;
+}

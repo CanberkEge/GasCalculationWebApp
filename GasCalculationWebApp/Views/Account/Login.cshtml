@@ -25,7 +25,9 @@
                 <li>Welcome, @User.Identity.Name!</li>
                 <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
                 <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
+                
             }
             else
             {

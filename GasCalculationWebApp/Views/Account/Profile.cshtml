@@ -38,13 +38,12 @@
         </ul>
     </nav>
 
-    <section class="form-section">
+    <section class="profile-section">
         <div class="form-container">
+            <!-- Sol Taraf: Kullanıcı Bilgileri -->
             <div class="form-left">
                 <h2><i class="fas fa-user-circle"></i> Profile Information</h2>
                 <p>Your personal details.</p>
-            </div>
-            <div class="form-right">
                 <div class="form-group">
                     <label for="name"><i class="fas fa-user"></i> Name:</label>
                     <input type="text" id="name" class="form-control" value="@Model.Name" readonly />
@@ -56,6 +55,19 @@
                 <div class="form-group">
                     <label for="createdAt"><i class="fas fa-calendar-alt"></i> Registered On:</label>
                     <input type="text" id="createdAt" class="form-control" value="@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")" readonly />
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Şifre Değiştirme Butonu -->
+            <div class="form-right">
+                <h2><i class="fas fa-key"></i> Security</h2>
+                <p>Update your account security settings.</p>
+
+                <!-- Change Password Sayfasına Yönlendiren Buton -->
+                <div class="form-group">
+                    <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
                 </div>
             </div>
         </div>

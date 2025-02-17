@@ -89,6 +89,92 @@ namespace GasCalculationWebApp.Controllers
         }
 
 
+
+        // Şifre Değiştirme Sayfasını Getiren Metod
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        // Şifre Değiştirme İşlemini Yapan Metod
+        [HttpPost]
+        [Authorize]
+        public IActionResult ChangePassword(ChangePasswordModel model)
+        {
+            if (model.NewPassword.Length < 6)
+            {
+                TempData["Error"] = "New password must be at least 6 characters long.";
+                return RedirectToAction("ChangePassword");
+            }
+
+            if (model.NewPassword.Length > 25)
+            {
+                TempData["Error"] = "New password must be at most 25 characters long.";
+                return RedirectToAction("ChangePassword");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Hangi alanın geçersiz olduğunu görmek için hata mesajlarını yazdıralım
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                Console.WriteLine("Model validation errors: " + string.Join(", ", errors));
+
+                TempData["Error"] = "Please fill in all fields correctly.";
+                return RedirectToAction("ChangePassword"); // Profile sayfasına yönlendir
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) 
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("ChangePassword");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.Id.ToString() == userId);
+
+            if (user == null)
+            {
+                TempData["Error"] = "User not found in database.";
+                return RedirectToAction("ChangePassword");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(model.OldPassword, user.PasswordHash))
+            {
+                TempData["Error"] = "Incorrect old password.";
+                return RedirectToAction("ChangePassword");
+            }
+
+
+            // 🔴 Şifre eski şifreyle aynı mı kontrol et
+            if (BCrypt.Net.BCrypt.Verify(model.NewPassword, user.PasswordHash))
+            {
+                TempData["Error"] = "New password cannot be the same as the old password.";
+                return RedirectToAction("ChangePassword");
+            }
+
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Your password has been changed successfully!";
+            return RedirectToAction("ChangePassword");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Kayıt Sayfası
         public IActionResult Register()
         {
@@ -184,6 +270,25 @@ namespace GasCalculationWebApp.Controllers
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // E-posta Doğrulama İşlemi
         public IActionResult ConfirmEmail(string token)
         {
@@ -201,6 +306,34 @@ namespace GasCalculationWebApp.Controllers
             TempData["Message"] = "Your email has been confirmed. You can now log in.";
             return RedirectToAction("Login");
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // E-posta gönderme metodu
         private void SendConfirmationEmail(User user)
