@@ -30,19 +30,19 @@ namespace GasCalculationWebApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(string identifier, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            // Kullanıcıyı e-posta veya kullanıcı adına göre bul
+            var user = _context.Users.FirstOrDefault(u => u.Email == identifier || u.Username == identifier);
 
             if (user == null)
             {
-                ViewBag.Error = "Invalid email or password.";
+                ViewBag.Error = "Invalid email, username, or password.";
                 return View();
             }
 
-
             // Hata ayıklamak için kullanıcı bilgilerini konsola yazdıralım
-            Console.WriteLine($"User Found: ID={user.Id}, Email={user.Email}, PasswordHash={user.PasswordHash}, EmailConfirmed={user.EmailConfirmed}");
+            Console.WriteLine($"User Found: ID={user.Id}, Username={user.Username}, Email={user.Email}, PasswordHash={user.PasswordHash}, EmailConfirmed={user.EmailConfirmed}");
 
             // Eğer user.PasswordHash NULL ise, hata vermesin diye kontrol ekle
             if (string.IsNullOrEmpty(user.PasswordHash))
@@ -53,7 +53,7 @@ namespace GasCalculationWebApp.Controllers
 
             if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                ViewBag.Error = "Invalid email or password.";
+                ViewBag.Error = "Invalid email, username, or password.";
                 return View();
             }
 
@@ -67,8 +67,8 @@ namespace GasCalculationWebApp.Controllers
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Kullanıcı ID'si
-        new Claim(ClaimTypes.Email, user.Email),                // Kullanıcı email'i
-        new Claim(ClaimTypes.Name, user.Name ?? "User")         // Kullanıcı adı (varsayılan User)
+        new Claim(ClaimTypes.Email, user.Email),                 // Kullanıcı email'i
+        new Claim(ClaimTypes.Name, user.Username ?? "User")      // Kullanıcı adı (varsayılan User)
     };
 
             // ClaimsIdentity ile kimlik bilgilerini bağla
@@ -78,15 +78,16 @@ namespace GasCalculationWebApp.Controllers
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = true, // Kalıcı oturum (tarayıcı kapansa bile devam eder)
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2) // Oturumun süresi
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2) // Oturum süresi
             };
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
-            TempData["Message"] = $"Welcome, {user.Email}!";
+            TempData["Message"] = $"Welcome, {user.Username}!";
 
             return RedirectToAction("Index", "Home");
         }
+
 
 
 
@@ -188,6 +189,13 @@ namespace GasCalculationWebApp.Controllers
             if (_context.Users.Any(u => u.Email == user.Email))
             {
                 ViewBag.Error = "This email is already registered.";
+                return View();
+            }
+
+            // Kullanıcı adının benzersiz olup olmadığını kontrol et
+            if (_context.Users.Any(u => u.Username == user.Username))
+            {
+                ViewBag.Error = "This username is already taken.";
                 return View();
             }
 

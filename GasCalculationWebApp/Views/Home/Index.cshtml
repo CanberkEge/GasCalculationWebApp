@@ -80,8 +80,8 @@
             <div class="form-group">
                 <label for="fuelType">Fuel Type:</label>
                 <select id="fuelType" name="fuelType">
-                    <option value="benzin">Benzin</option>
-                    <option value="dizel">Dizel</option>
+                    <option value="benzin">Gasoline</option>
+                    <option value="dizel">Diesel</option>
                     <option value="lpg">LPG</option>
                 </select>
             </div>
@@ -92,6 +92,13 @@
             <div class="form-group">
                 <label for="averageGasSpend">Average Gas Spend (liters per 100 km):</label>
                 <input type="text" id="averageGasSpend" name="averageGasSpend" required />
+            </div>
+
+
+            <!-- Yeni input alanı: Kaç kez yolculuk yapılacağını soruyoruz -->
+            <div class="form-group">
+                <label for="tripCount">How many times will this trip be made?</label>
+                <input type="number" id="tripCount" name="tripCount" class="form-control" value="1" min="1" required>
             </div>
             <button type="submit" class="btn">Calculate</button>
         </form>

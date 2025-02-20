@@ -54,7 +54,7 @@ namespace GasCalculationWebApp.Controllers
         
 
         [HttpPost]
-        public IActionResult Calculate(string fuelType, double distance, double averageGasSpend)
+        public IActionResult Calculate(string fuelType, double distance, double averageGasSpend, int tripCount)
         {
             var fuelTypeLabels = new Dictionary<string, string>
             {
@@ -87,6 +87,7 @@ namespace GasCalculationWebApp.Controllers
             double totalGasSpend = Math.Round((averageGasSpend * distance) / 100, 2);
             double totalPrice = Math.Round(totalGasSpend * price, 2);
             double roundTripPrice = Math.Round(totalPrice * 2, 2);
+            double finalTotalPrice = Math.Round(totalPrice * tripCount, 2); // Kullanıcının girdiği tripCount ile çarpıyoruz
 
             // Fuel type baş harfini büyük yapma
             string formattedFuelType = char.ToUpper(fuelType[0]) + fuelType.Substring(1);
@@ -95,12 +96,13 @@ namespace GasCalculationWebApp.Controllers
             string formattedTotalGasSpend = totalGasSpend.ToString("N2");
             string formattedTotalPrice = totalPrice.ToString("N2");
             string formattedRoundTripPrice = roundTripPrice.ToString("N2");
+            string formattedFinalTotalPrice = finalTotalPrice.ToString("N2");
 
             ViewBag.Result = $"Fuel Type: {formattedFuelType}<br>" +
-                             $"Price per liter: {price} TL<br>" +
+                             $"Price per liter: {price} ₺<br>" +
                              $"Total fuel consumption = {formattedTotalGasSpend} liters<br>" +
-                             $"Total price = {formattedTotalPrice} TL<br>" +
-                             $"Round trip price = {formattedRoundTripPrice} TL";
+                             $"Total price = {formattedTotalPrice} ₺<br>" +                             
+                             $"Total price for {tripCount} trips = {formattedFinalTotalPrice} ₺";
 
             ViewBag.Brands = _context.CarDatas2
                 .Select(c => c.Brand)
@@ -226,10 +228,10 @@ namespace GasCalculationWebApp.Controllers
                                 $"<b>Fuel Price for {fuel}:</b> {fuelPrice} TL/L<br><br>" +
                                 $"<u><b>Urban Driving:</b></u><br>" +
                                 $"Total Fuel: {formattedTotalCityFuel} liters<br>" +
-                                $"Total Cost: {formattedCityCost} TL<br><br>" +
+                                $"Total Cost: {formattedCityCost} ₺<br><br>" +
                                 $"<u><b>Out of Town Driving:</b></u><br>" +
                                 $"Total Fuel: {formattedTotalOutsideFuel} liters<br>" +
-                                $"Total Cost: {formattedOutsideCost} TL<br><br>" +
+                                $"Total Cost: {formattedOutsideCost} ₺<br><br>" +
                                 $"<u><b>Difference:</b></u><br>" +
                                 $"Cost Difference (Şehir İçi - Şehir Dışı): {formattedCostDifference}₺<br>" +
                                 $"Fuel Difference (Şehir İçi - Şehir Dışı): {formattedFuelDifference}L";

@@ -10,6 +10,8 @@ namespace GasCalculationWebApp.Model
         public string PasswordHash { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public string Username { get; set; }  // Kullanıcı adı
+
         public bool EmailConfirmed { get; set; } 
         public string? ConfirmationToken { get; set; }
 
