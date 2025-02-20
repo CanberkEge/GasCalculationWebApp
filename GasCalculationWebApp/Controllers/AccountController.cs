@@ -8,6 +8,7 @@ using GasCalculationWebApp.Model;
 using System.Net.Mail;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Azure.Identity;
 
 namespace GasCalculationWebApp.Controllers
 {
@@ -242,6 +243,7 @@ namespace GasCalculationWebApp.Controllers
                 .Where(u => u.Id.ToString() == userId)
                 .Select(u => new UserViewModel
                 {
+                    Username = u.Username,
                     Name = u.Name,
                     Email = u.Email,
                     CreatedAt = u.CreatedAt
