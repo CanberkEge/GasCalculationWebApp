@@ -27,6 +27,7 @@
                 <li>Welcome, @User.Identity.Name!</li>
                 <li><a href="@Url.Action("MyCars", "Car")" class="active">My Cars</a></li>
                 <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("CompareCars", "Car")"><i class="fas fa-balance-scale"></i> Compare Cars</a></li>
                 <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
                 
@@ -69,6 +70,7 @@
                                 <th>Horsepower</th>
                                 <th>City Consumption</th>
                                 <th>Outside Consumption</th>
+                                <th>0-100 km/s</th> <!-- Yeni sütun eklendi -->
                             </tr>
                         </thead>
                         <tbody>
@@ -84,6 +86,7 @@
                                     <td>@car.HP</td>
                                     <td>@car.CityConsumption L/100km</td>
                                     <td>@car.OutsideConsumption L/100km</td>
+                                    <td>@car.Acceleration_0_100</td> <!-- Yeni veri eklendi -->
                                 </tr>
                             }
                         </tbody>

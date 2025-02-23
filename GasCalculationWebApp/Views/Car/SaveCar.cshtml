@@ -33,6 +33,7 @@
                 <li>Welcome, @User.Identity.Name!</li>
                 <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
                 <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("CompareCars", "Car")"><i class="fas fa-balance-scale"></i> Compare Cars</a></li>
                 <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
                 
@@ -124,6 +125,8 @@
                     <!-- Araç bilgilerini form ile birlikte göndermek için hidden inputlar -->
                     <input type="hidden" name="CityConsumption" id="hiddenCityConsumption">
                     <input type="hidden" name="OutsideConsumption" id="hiddenOutsideConsumption">
+                    <input type="hidden" name="Acceleration_0_100" id="hiddenAcceleration"> <!-- 0-100 km/s hızlanma süresi eklendi -->
+
 
 
 
@@ -191,6 +194,7 @@
                     document.getElementById('carId').value = data.id; // carId'yi atıyoruz
                     document.getElementById('hiddenCityConsumption').value = data.cityConsumption;
                     document.getElementById('hiddenOutsideConsumption').value = data.outsideConsumption;
+                    document.getElementById('hiddenAcceleration').value = data.acceleration_0_100; // Hızlanma süresi inputa eklendi
 
 
                     document.getElementById('detailsContent').innerHTML = `
@@ -203,7 +207,8 @@
                         <strong>Fuel:</strong> ${data.fuel}<br>
                         <strong>Horsepower (HP):</strong> ${data.hp}<br>
                         <strong>City Consumption:</strong> ${data.cityConsumption} L/100km<br>
-                        <strong>Outside Consumption:</strong> ${data.outsideConsumption} L/100km
+                        <strong>Outside Consumption:</strong> ${data.outsideConsumption} L/100km<br>
+                        <strong>Acceleration (0-100 km/h):</strong> ${data.acceleration_0_100} sec
                     `;
                 }
             })

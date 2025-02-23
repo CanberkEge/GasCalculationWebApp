@@ -20,6 +20,63 @@ namespace GasCalculationWebApp.Controllers
             _context = context;
         }
 
+        #region 🚗 Araç Karşılaştırma
+
+
+        [HttpGet]
+        public IActionResult CompareCars()
+        {
+            ViewBag.Brands = _context.CarDatas2.Select(c => c.Brand).Distinct().ToList();
+            return View();
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult CompareCars(string brand1, string model1, string generation1, string year1, string engine1,
+                                  string brand2, string model2, string generation2, string year2, string engine2)
+        {
+            var car1 = _context.CarDatas2.FirstOrDefault(c =>
+                c.Brand == brand1 &&
+                c.Model == model1 &&
+                c.Generation == generation1 &&
+                c.Year == year1 &&
+                c.Engine == engine1);
+
+            var car2 = _context.CarDatas2.FirstOrDefault(c =>
+                c.Brand == brand2 &&
+                c.Model == model2 &&
+                c.Generation == generation2 &&
+                c.Year == year2 &&
+                c.Engine == engine2);
+
+            if (car1 == null || car2 == null)
+            {
+                ViewBag.Error = "Invalid car selection. Please ensure all fields are selected correctly.";
+                ViewBag.Brands = _context.CarDatas2.Select(c => c.Brand).Distinct().ToList();
+                return View();
+            }
+
+            var comparisonResult = new
+            {
+                Car1 = car1,
+                Car2 = car2,
+                HPDifference = Math.Abs(car1.HP - car2.HP),
+                CityConsumptionDifference = Math.Abs(car1.CityConsumption - car2.CityConsumption),
+                OutsideConsumptionDifference = Math.Abs(car1.OutsideConsumption - car2.OutsideConsumption),
+                AccelerationDifference = car1.Acceleration_0_100 - car2.Acceleration_0_100
+            };
+
+            ViewBag.Result = comparisonResult;
+            ViewBag.Brands = _context.CarDatas2.Select(c => c.Brand).Distinct().ToList();
+            return View();
+        }
+
+
+        #endregion
+
+
+
+        #region 🚗 Kullanıcı Araçları Kaydetme ve Listeleme
+
 
         [HttpGet]
         public IActionResult SaveCar()
@@ -128,12 +185,10 @@ namespace GasCalculationWebApp.Controllers
             return View(cars);
         }
 
-        /*
-        private int GetLoggedInUserId()
-        {
-            return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Kullanıcının ID'si
-        }
-        */
+        #endregion
+
+
+        #region 🔒 Kullanıcı Kimlik Doğrulama
 
         // 29.01.2025
         private int GetLoggedInUserId()
@@ -142,8 +197,9 @@ namespace GasCalculationWebApp.Controllers
             return userId != null ? int.Parse(userId) : 0;
         }
 
+        #endregion
 
-        #region Dropdown Data Endpoints
+        #region 📌 Dropdown Seçenekleri API
 
 
         [HttpGet]
@@ -262,7 +318,7 @@ namespace GasCalculationWebApp.Controllers
 
 
 
-        #region Fetch Car Details Endpoint
+        #region 🔍 Belirli Bir Aracın Detaylarını Getirme
 
         [HttpGet]
         public IActionResult GetCarDetails(string brand, string model, string generation, string year, string engine, string fuel, int hp)
@@ -280,7 +336,8 @@ namespace GasCalculationWebApp.Controllers
                     c.Fuel,
                     c.HP,
                     c.CityConsumption,
-                    c.OutsideConsumption
+                    c.OutsideConsumption,
+                    c.Acceleration_0_100 // 0-100 km/s hızlanma süresi eklendi
                 })
                 .FirstOrDefault();
 

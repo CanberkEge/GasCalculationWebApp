@@ -1,0 +1,219 @@
+﻿@model dynamic
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Cars</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><i class="fas fa-car"></i> Compare Cars</h1>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li><a href="@Url.Action("CarIndex", "Home")">Calculate by Car</a></li>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li>Welcome, @User.Identity.Name!</li>
+                <li><a href="@Url.Action("MyCars", "Car")">My Cars</a></li>
+                <li><a href="@Url.Action("SaveCar", "Car")">Save Car</a></li>
+                <li><a href="@Url.Action("CompareCars", "Car")"><i class="fas fa-balance-scale"></i> Compare Cars</a></li>
+                <li><a href="@Url.Action("Profile", "Account")"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
+            }
+            else
+            {
+                <li><a href="@Url.Action("Login", "Account")">Login</a></li>
+                <li><a href="@Url.Action("Register", "Account")">Register</a></li>
+            }
+            
+        </ul>
+    </nav>
+
+    <section class="form-section">
+        <h2>Compare Two Cars</h2>
+        <form method="post" action="/Car/CompareCars" class="form-container">
+            <!-- Sol Araç -->
+            <div class="form-left">
+                <h3>Select Car 1</h3>
+                <select id="brand1" name="brand1" onchange="loadModels('brand1', 'model1')" required>
+                    <option value="">Select Brand</option>
+                    @foreach (var brand in ViewBag.Brands)
+                    {
+                        <option value="@brand">@brand</option>
+                    }
+                </select>
+                <select id="model1" name="model1" onchange="loadGenerations('brand1', 'model1', 'generation1')" required>
+                    <option value="">Select Model</option>
+                </select>
+                <select id="generation1" name="generation1" onchange="loadYears('brand1', 'model1', 'generation1', 'year1')" required>
+                    <option value="">Select Generation</option>
+                </select>
+                <select id="year1" name="year1" onchange="loadEngines('brand1', 'model1', 'generation1', 'year1', 'engine1')" required>
+                    <option value="">Select Year</option>
+                </select>
+                <select id="engine1" name="engine1" required>
+                    <option value="">Select Engine</option>
+                </select>
+            </div>
+
+            <!-- Sağ Araç -->
+            <div class="form-right">
+                <h3>Select Car 2</h3>
+                <select id="brand2" name="brand2" onchange="loadModels('brand2', 'model2')" required>
+                    <option value="">Select Brand</option>
+                    @foreach (var brand in ViewBag.Brands)
+                    {
+                        <option value="@brand">@brand</option>
+                    }
+                </select>
+                <select id="model2" name="model2" onchange="loadGenerations('brand2', 'model2', 'generation2')" required>
+                    <option value="">Select Model</option>
+                </select>
+                <select id="generation2" name="generation2" onchange="loadYears('brand2', 'model2', 'generation2', 'year2')" required>
+                    <option value="">Select Generation</option>
+                </select>
+                <select id="year2" name="year2" onchange="loadEngines('brand2', 'model2', 'generation2', 'year2', 'engine2')" required>
+                    <option value="">Select Year</option>
+                </select>
+                <select id="engine2" name="engine2" required>
+                    <option value="">Select Engine</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Compare</button>
+        </form>
+    </section>
+
+    @if (ViewBag.Result != null)
+    {
+        var result = ViewBag.Result;
+        <section class="result-section">
+            <h3>Comparison Results</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Car 1 (@result.Car1.Brand @result.Car1.Model)</th>
+                        <th>Car 2 (@result.Car2.Brand @result.Car2.Model)</th>
+                        <th>Difference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>HP</td>
+                        <td>@result.Car1.HP</td>
+                        <td>@result.Car2.HP</td>
+                        <td>@result.HPDifference</td>
+                    </tr>
+                    <tr>
+                        <td>City Consumption</td>
+                        <td>@result.Car1.CityConsumption L/100km</td>
+                        <td>@result.Car2.CityConsumption L/100km</td>
+                        <td>@result.CityConsumptionDifference L/100km</td>
+                    </tr>
+                    <tr>
+                        <td>Outside Consumption</td>
+                        <td>@result.Car1.OutsideConsumption L/100km</td>
+                        <td>@result.Car2.OutsideConsumption L/100km</td>
+                        <td>@result.OutsideConsumptionDifference L/100km</td>
+                    </tr>
+                    <tr>
+                        <td>0-100 Acceleration</td>
+                        <td>@result.Car1.Acceleration_0_100 s</td>
+                        <td>@result.Car2.Acceleration_0_100 s</td>
+                        <td>@result.AccelerationDifference s</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    }
+
+    <footer>
+        <p>© 2025 Gas Calculation. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Dinamik dropdown fonksiyonları
+        function loadModels(brandId, modelId) {
+            const brand = document.getElementById(brandId).value;
+            const modelSelect = document.getElementById(modelId);
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            fetch(`/Car/GetModels?brand=${encodeURIComponent(brand)}`)
+                .then(response => response.json())
+                .then(models => models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                }));
+        }
+        // Diğer fonksiyonlar loadGenerations, loadYears, loadEngines aynı yapıya sahip.
+
+
+                function loadGenerations(brandId, modelId, generationId) {
+            const brand = document.getElementById(brandId).value;
+            const model = document.getElementById(modelId).value;
+            const generationSelect = document.getElementById(generationId);
+            generationSelect.innerHTML = '<option value="">Select Generation</option>';
+
+            fetch(`/Car/GetGenerations?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`)
+                .then(response => response.json())
+                .then(generations => generations.forEach(generation => {
+                    const option = document.createElement('option');
+                    option.value = generation;
+                    option.textContent = generation;
+                    generationSelect.appendChild(option);
+                }))
+                .catch(error => console.error("Error loading generations:", error));
+        }
+
+        function loadYears(brandId, modelId, generationId, yearId) {
+            const brand = document.getElementById(brandId).value;
+            const model = document.getElementById(modelId).value;
+            const generation = document.getElementById(generationId).value;
+            const yearSelect = document.getElementById(yearId);
+            yearSelect.innerHTML = '<option value="">Select Year</option>';
+
+            fetch(`/Car/GetYears?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}`)
+                .then(response => response.json())
+                .then(years => years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                }))
+                .catch(error => console.error("Error loading years:", error));
+        }
+
+        function loadEngines(brandId, modelId, generationId, yearId, engineId) {
+            const brand = document.getElementById(brandId).value;
+            const model = document.getElementById(modelId).value;
+            const generation = document.getElementById(generationId).value;
+            const year = document.getElementById(yearId).value;
+            const engineSelect = document.getElementById(engineId);
+            engineSelect.innerHTML = '<option value="">Select Engine</option>';
+
+            fetch(`/Car/GetEngines?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}&generation=${encodeURIComponent(generation)}&year=${encodeURIComponent(year)}`)
+                .then(response => response.json())
+                .then(engines => engines.forEach(engine => {
+                    const option = document.createElement('option');
+                    option.value = engine;
+                    option.textContent = engine;
+                    engineSelect.appendChild(option);
+                }))
+                .catch(error => console.error("Error loading engines:", error));
+        }
+
+    </script>
+</body>
+</html>

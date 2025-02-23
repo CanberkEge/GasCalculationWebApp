@@ -12,6 +12,7 @@
         public int HP { get; set; }
         public decimal CityConsumption { get; set; }
         public decimal OutsideConsumption { get; set; }
+        public decimal Acceleration_0_100 { get; set; } // Yeni eklenen alan
 
 
         public ICollection<UserCar> UserCars { get; set; } // Ara tablodan ilişki
